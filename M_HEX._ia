@@ -1,0 +1,1 @@
+"..\SBC-85uP\M_HEX.a" SET (SMALL) DEBUG PRINT(.\M_HEX.lst) OBJECT(..\SBC-85uP\SBCHex\M_HEX.obj) EP

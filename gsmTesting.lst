@@ -1,0 +1,118 @@
+A51 MACRO ASSEMBLER  GSMTESTING                                                           03/06/2015 20:02:21 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\gsmTesting.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE ..\..\fedy's project\project papers for EMS\gsmTesting.a SET(SMALL) DEBUG 
+                      PRINT(.\gsmTesting.lst) OBJECT(C:\sbcHex\gsmTesting.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS CODE IS TO TEST THE GSM MODEM COMMUNICATION WITH THE MICROCONTROLLER IN PROTUES WITH
+                       2     ; THE COMPIN AND THE VIRTUAL TERMINAL RESOURCES OF PROTUES
+                       3     
+0000                   4                             ORG                     0000H
+0000 758920            5                             MOV                     TMOD, #20H               
+0003 758DFD            6                             MOV                     TH1, #-3                 
+0006 759850            7                             MOV                     SCON, #50H               
+0009 D28E              8                             SETB            TR1
+                       9     
+000B 900300           10                             MOV                     DPTR, #MSG1
+000E 1129             11                             ACALL           H1
+0010 113B             12                             ACALL           DELAY
+                      13     
+0012 900304           14                             MOV                     DPTR, #MSG2
+0015 1129             15                             ACALL           H1
+0017 113B             16                             ACALL           DELAY
+                      17     
+                      18     ;                       MOV                     DPTR, #MSG3
+                      19     ;                       ACALL           H1
+                      20     ;                       ACALL           DELAY
+                      21     
+0019 90030F           22                             MOV                     DPTR, #MSG4
+001C 1129             23                             ACALL           H1
+001E 113B             24                             ACALL           DELAY
+                      25     
+0020 900324           26                             MOV                     DPTR, #MSG5
+0023 1129             27                             ACALL           H1
+0025 113B             28                             ACALL           DELAY
+                      29     
+0027 80FE             30     STAY:           SJMP            STAY
+                      31     
+0029 E4               32     H1:                     CLR                     A
+002A 93               33                             MOVC            A, @A+DPTR
+002B 6005             34                             JZ                      B1
+002D 1133             35                             ACALL           SEND
+002F A3               36                             INC                     DPTR
+0030 80F7             37                             SJMP            H1
+                      38     
+0032 22               39     B1:                     RET
+                      40     
+0033 F599             41     SEND:           MOV                     SBUF, A
+                      42     
+0035 30B5FD           43     H2:                     JNB                     T1, H2
+0038 C2B5             44                             CLR                     T1
+003A 22               45                             RET
+                      46     
+003B 7B50             47     DELAY:          MOV                     R3, #50H
+003D 7C50             48     HERE2:          MOV                     R4, #50H
+003F DCFE             49     HERE:           DJNZ            R4, HERE
+0041 DBFA             50                             DJNZ            R3, HERE2
+0043 22               51                             RET
+                      52     
+0300                  53                             ORG                     300H
+                      54     
+0300 41540D           55     MSG1:           DB                      "AT", 0DH
+0303 00               56                             DB                      0H
+0304 41542B43         57     MSG2:           DB                      "AT+CMGF=1", 0DH
+A51 MACRO ASSEMBLER  GSMTESTING                                                           03/06/2015 20:02:21 PAGE     2
+
+0308 4D47463D                
+030C 310D                    
+030E 00               58                             DB                      0H
+                      59     ;MSG3:          DB                      "ATE=0", 0DH
+                      60     ;                       DB                      0H
+030F 41542B43         61     MSG4:           DB                      "AT+CMGS=","07067514145", 0DH
+0313 4D47533D                
+0317 30373036                
+031B 37353134                
+031F 3134350D                
+0323 00               62                             DB                      0H
+0324 46454459         63     MSG5:           DB                      "FEDYRONIX", 0DH
+0328 524F4E49                
+032C 580D                    
+032E 00               64                             DB                      0H
+                      65                             
+                      66                             END
+A51 MACRO ASSEMBLER  GSMTESTING                                                           03/06/2015 20:02:21 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B1 . . . . . . . .  C ADDR   0032H   A   
+DELAY. . . . . . .  C ADDR   003BH   A   
+H1 . . . . . . . .  C ADDR   0029H   A   
+H2 . . . . . . . .  C ADDR   0035H   A   
+HERE . . . . . . .  C ADDR   003FH   A   
+HERE2. . . . . . .  C ADDR   003DH   A   
+MSG1 . . . . . . .  C ADDR   0300H   A   
+MSG2 . . . . . . .  C ADDR   0304H   A   
+MSG4 . . . . . . .  C ADDR   030FH   A   
+MSG5 . . . . . . .  C ADDR   0324H   A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SEND . . . . . . .  C ADDR   0033H   A   
+STAY . . . . . . .  C ADDR   0027H   A   
+T1 . . . . . . . .  B ADDR   00B0H.5 A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

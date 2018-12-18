@@ -1,0 +1,165 @@
+A51 MACRO ASSEMBLER  ASCII_2_HEXSBCTESTING                                                02/20/2015 15:51:08 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\ASCII_2_HEXsbcTesting.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE ASCII_2_HEXsbcTesting.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\ASCII_2_HEXsbcTe
+                      sting.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS SUBROUTINE CONVERTS A GIVEN ASCII CHARACTER INTO ITS EQUIVALENT HGEXADECIMAL NUMBER 
+                             USING 8051 INSTRUCTION SETS
+                       2     ; SOME ADDITIONAL CODE HERE ARE TO ENSURE PROTECTION SINCE THIS SR IS TO BE USED WERE A-Z A
+                             PHABET KEYS ARE AVAILABLE TO BE DEPRESSED
+                       3     
+                       4     ; REGISTER DEFINITION:
+                       5     ; OPERATING REGISTER = A
+                       6     
+                       7     ; BI                    BIT             04H                                     ; BYTE INDI
+                             CATOR (INDICATES WHEN AN OPERAND IS A 2 BYTE(4 NIBBLES) OR 1 BYTE (2NIBBLES) )
+                       8     
+                       9     ; ** TEST USING THE ADDRESS VALUE 'D3A8H IN ASCII'. U MAY PUT SOME ERROR TESTS LIKE '*' & '
+                             S' ALL IN THEIR ASCII VALUE
+                      10     ; ****REMEMBER TO SAVE REGS & FLAGS STILL RELEVANT TO THE CALLER PROGRAM TO AVOID DATA LOSS
+                             ****
+                      11     
+0000                  12                                             ORG                     0000H
+0000 802E             13                                             JMP                     MAIN                       
+                                                  ; ON SYSTEM RESET, JUMP TO MAIN
+                      14                                             
+0030                  15                                             ORG                     0030H
+0030                  16     MAIN:                                                                                      
+                                                  ; THE MAIN PROGRAM BEGINS HERE
+0030 753204           17                                             MOV                     32H, #04H                  
+                                                  ; ENSURES THAT ONLY FOUR NIBBLES (ie 2 BYTE DATA) ARE ENTERED
+0033 D204             18                                             SETB            04H                                
+                                                  ; SET THE BYTE INDICATOR FOR A 2 BYTE(4 NIBBLE) OPERAND CONVERSION
+0035 D206             19                                             SETB            06H                                
+                                                  ; SET FLAG TO CAUSE THE ASCII_2_HEX SR TO CARRY OUT HIGH ORDER BYTE MARRIAGE FIRST
+0037                  20     MAINTEST:
+0037 1145             21                                             CALL            ASCII_2_HEX
+0039 3002FB           22                                             JNB                     02H, MAINTEST              
+                                          ; ENSURES THAT THE KEY PRESSED IS BETWEEN 0 - F IN HEX
+003C C202             23                                             CLR                     02H                        
+                                                          ; GET READY FOR NEXT KEY
+                      24     
+003E E531             25                                             MOV             A,31H                              
+                                          ; DISPLAY THE NUMBER
+                      26     ;                                       CALL            LCD_SHO
+0040 D532F4           27                                             DJNZ            32H, MAINTEST                      
+                                  ; CHECK IF TWO NIBBLES (ONE BYTE) DATA HAVE BEEN ENTERED
+                      28     
+0043 80EB             29                                             SJMP            MAIN
+                      30     
+                      31     
+0045                  32     ASCII_2_HEX:    
+0045 B43001           33                                     CJNE    A, #30H, A2H_1  ; THE CONTENT OF 'A' MUST SATISFY T
+                             HE FOLLOWING INEQUALITY: 30H =< A =< 46H
+0048 C3               34                                     CLR             C                               ; ENSURE IT
+                              PASSES TO THE NEXT INSTRUCTION
+                      35     
+0049 4041             36     A2H_1:                  JC              EXIT_A2H
+004B 9430             37                                     SUBB    A, #30H                 ; SUBTRACT 30H FROM A REGIS
+                             TER
+004D B40A01           38                                     CJNE    A, #0AH, A2H_2
+0050 C3               39                                     CLR             C                               ; ENSURE IT
+                              PASSES TO THE NEXT INSTRUCTION
+A51 MACRO ASSEMBLER  ASCII_2_HEXSBCTESTING                                                02/20/2015 15:51:08 PAGE     2
+
+                      40     
+0051 4008             41     A2H_2:                  JC              A2H_4
+0053 9407             42                                     SUBB    A, #07H                 ; SUBTRACT 07H FROM 'A' REG
+                             ISTER
+0055 B40F01           43                                     CJNE    A, #0FH, A2H_3  ; CHECK IF THE RESULT OF THE SUBTRA
+                             CTION IS GREATER THAN 0FH; IF SO EXIT THE SR ELSE CONTINUE
+0058 D3               44                                     SETB    C                               ; ENSURE IT PASSES 
+                             TO THE NEXT INSTRUCTION
+                      45     
+0059 5031             46     A2H_3:                  JNC             EXIT_A2H                
+                      47     ; THE TEST IS COMPLETED. THE INEQUQLITY: 30H =< A =< 46H HAS BEEN SATISFIED AND CONVERSION 
+                             HAS TAKEN PLACE!!!
+                      48     
+005B D202             49     A2H_4:                  SETB    02H                             ; THE FLAG, 02H BEEN SET IN
+                             DICATES THAT THE KEY PRESSED IS BETWEEN 0 - F IN HEX
+005D C3               50                                     CLR             C                               ; ENSURE TH
+                             AT THE SUBTRCTION IS DONE WITHOUT BORROW(ie THE CARRY FLAG)
+                      51     
+                      52     ; MARRIAGE BEGINS
+005E 30041A           53                                     JNB             04H, A2H_7              ; MEM BIT, 04H = 1 
+                             MEANS 2 BYTES(4 NIBBLES) & 04H = 0 MEANS 1 BYTE (2 NIBBLES)
+0061 200602           54                                     JB              06H, A2H_5              ; HAS THE MARRIAGE 
+                             OF HIGH ORDER BYTE COMPLETED? FOR NO, 06H = 1; FOR YES, 06H = 0
+0064 8015             55                                     SJMP    A2H_7                   ; JMUP FOR THE LOWER BYTE O
+                             F ADDRESS
+                      56     
+                      57     ; FOR HIGHER ORDER BYTE OF AN ADDRESS
+0066 B205             58     A2H_5:                  CPL             05H                             ; CONTROLS THE NIBB
+                             LE MARRIAGE INTO A BYTE
+0068 200508           59                                     JB              05H, A2H_6
+006B 4535             60                                     ORL             A, 35H                  ; MARRY MSB(1ST NIB
+                             BLE IN MEM LOC. 34H) AND THE LSB(2ND NIBBLE IN 'A') INTO A BYTE DATA OR ADDRESS
+006D F535             61                                     MOV             35H, A                  ; SAVE RESULT IN ME
+                             M LOC. 35H 
+006F C206             62                                     CLR             06H                             ; CLEARS ON
+                              MARRIAGE COMPLETION FOR HIGH ORDER BYTE
+0071 8019             63                                     SJMP    EXIT_A2H
+                      64     
+0073 23               65     A2H_6:                  RL              A                               ; SWAP MSB AND LSB
+0074 23               66                                     RL              A
+0075 23               67                                     RL              A
+0076 23               68                                     RL              A
+0077 F535             69                                     MOV             35H, A                  ; SAVE RESULT IN ME
+                             M LOC. 34H
+                      70     
+0079 8011             71                                     SJMP    EXIT_A2H
+                      72     
+                      73     ; FOR DATA OR LOWER ORDER BYTE OF AN ADDRESS
+007B B205             74     A2H_7:                  CPL             05H                             ; CONTROLS THE NIBB
+                             LE MARRIAGE INTO A BYTE
+007D 200506           75                                     JB              05H, A2H_8
+0080 4534             76                                     ORL             A, 34H                  ; MARRY MSB(1ST NIB
+                             BLE IN MEM LOC. 34H) AND THE LSB(2ND NIBBLE IN 'A') INTO A BYTE DATA OR ADDRESS
+0082 F534             77                                     MOV             34H, A                  ; SAVE RESULT IN ME
+                             M LOC. 34H 
+0084 8006             78                                     SJMP    EXIT_A2H
+                      79     
+0086 23               80     A2H_8:                  RL              A                               ; SWAP MSB AND LSB
+0087 23               81                                     RL              A
+0088 23               82                                     RL              A
+0089 23               83                                     RL              A
+008A F534             84                                     MOV             34H, A                  ; SAVE RESULT IN ME
+                             M LOC. 34H
+                      85     
+008C                  86     EXIT_A2H:
+008C 22               87                                     RET                                             ; RETURN TO
+A51 MACRO ASSEMBLER  ASCII_2_HEXSBCTESTING                                                02/20/2015 15:51:08 PAGE     3
+
+                              THE CALLER PROGRAM
+                      88                                     END
+A51 MACRO ASSEMBLER  ASCII_2_HEXSBCTESTING                                                02/20/2015 15:51:08 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+A2H_1. . . . . . .  C ADDR   0049H   A   
+A2H_2. . . . . . .  C ADDR   0051H   A   
+A2H_3. . . . . . .  C ADDR   0059H   A   
+A2H_4. . . . . . .  C ADDR   005BH   A   
+A2H_5. . . . . . .  C ADDR   0066H   A   
+A2H_6. . . . . . .  C ADDR   0073H   A   
+A2H_7. . . . . . .  C ADDR   007BH   A   
+A2H_8. . . . . . .  C ADDR   0086H   A   
+ASCII_2_HEX. . . .  C ADDR   0045H   A   
+EXIT_A2H . . . . .  C ADDR   008CH   A   
+MAIN . . . . . . .  C ADDR   0030H   A   
+MAINTEST . . . . .  C ADDR   0037H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

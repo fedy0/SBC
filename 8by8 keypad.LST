@@ -1,0 +1,189 @@
+A51 MACRO ASSEMBLER  8BY8_KEYPAD                                                          02/09/2015 21:52:05 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8by8 keypad.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8by8 keypad.asm SET(SMALL) DEBUG OBJECT(C:\sbcHex\8by8 keypad.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+0000                   2            ORG 00h
+0000 7590FF            3           mov P1,#0ffh;make port1 an it
+0003 75A000            4            mov P2,#00h
+  0080                 5            en bit P0.0 
+  0081                 6            RS bit P0.1
+0006 11A2              7            acall init_lcd
+                       8            
+                       9        
+                      10          
+0008 1183             11        K2:    acall delay
+000A E590             12               mov a,P1
+000C B4FF05           13               cjne a,#11111111b,over
+000F 75A000           14               mov P2,#00h
+0012 80F4             15               sjmp K2
+                      16            
+                      17            
+                      18            
+0014 1183             19     Over:  acall delay
+0016 E590             20            mov a,P1
+0018 B4FF02           21            cjne a,#11111111b,over1
+001B 80EB             22            sjmp K2
+                      23            
+001D                  24     over1: 
+                      25               
+001D 75A0FE           26            mov P2,#11111110b
+0020 E590             27            mov a,P1
+0022 B4FF3B           28            cjne a,#11111111b,row_0
+                      29            
+0025 75A0FD           30            mov P2, #11111101b
+0028 E590             31            mov a,P1
+002A B4FF38           32            cjne a,#11111111b,row_1
+                      33            
+002D 75A0FB           34            mov P2, #11111011b
+0030 E590             35            mov a,P1
+0032 B4FF35           36            cjne a,#11111111b,row_2
+                      37            
+0035 75A0F7           38            mov P2, #11110111b
+0038 E590             39            mov a,P1
+003A B4FF32           40            cjne a,#11111111b,row_3
+                      41            
+003D 75A0EF           42             mov P2,#11101111b
+0040 E590             43            mov a,P1
+0042 B4FF1B           44            cjne a,#11111111b,row_0
+                      45            
+0045 75A0DF           46            mov P2, #11011111b
+0048 E590             47            mov a,P1
+004A B4FF18           48            cjne a,#11111111b,row_1
+                      49            
+004D 75A0BF           50            mov P2, #10111111b
+0050 E590             51            mov a,P1
+0052 B4FF15           52            cjne a,#11111111b,row_2
+                      53            
+0055 75A07F           54            mov P2, #01111111b
+0058 E590             55            mov a,P1
+005A B4FF12           56            cjne a,#11111111b,row_3
+005D 020008           57            ljmp K2
+                      58            
+A51 MACRO ASSEMBLER  8BY8_KEYPAD                                                          02/09/2015 21:52:05 PAGE     2
+
+0060                  59     row_0:
+0060 900300           60            mov dptr,#db_0
+0063 800D             61            sjmp find
+0065                  62     row_1:
+0065 900303           63            mov dptr,#db_1
+0068 8008             64            sjmp find
+006A                  65     row_2: 
+006A 900306           66            mov dptr,#db_2
+006D 8003             67            sjmp find
+006F                  68     row_3: 
+006F 900309           69            mov dptr,#db_3
+                      70     
+0072 13               71     find: rrc a
+0073 5003             72           jnc match
+0075 A3               73           inc dptr
+0076 80FA             74           sjmp find
+                      75           
+0078                  76     match:;acall E
+0078 E4               77            clr a
+0079 93               78            movc a,@a+dptr
+                      79            ;mov P0,a
+007A 118C             80            acall data_wrt
+007C 1183             81            acall delay
+007E 1183             82            acall delay
+0080 020008           83            ljmp K2
+                      84            
+0083                  85     delay:
+0083 7A32             86     mov r2,#50
+0085 79FF             87     mov r1,#255
+                      88     
+0087 D9FE             89     delaya:Djnz r1,delaya
+0089 DAFC             90            Djnz r2,delaya
+008B 22               91            ret
+                      92            
+008C                  93     data_wrt: 
+008C F5B0             94               mov P3,a
+008E D281             95               setb RS
+                      96               ;clr RW
+0090 D280             97               setb en
+0092 1183             98               acall delay
+0094 C280             99               clr en
+0096 22              100               ret
+0097 F5B0            101     com_wrt: mov P3,a
+0099 C281            102              clr RS
+                     103              ;clr RW
+009B D280            104              setb en
+009D 1183            105              acall delay
+009F C280            106              clr en
+00A1 22              107              ret
+00A2 7438            108     init_lcd: mov a,#38h;2 lines 5x7 matrix
+00A4 1197            109               acall com_wrt
+00A6 1183            110               acall delay
+00A8 740E            111               mov a,#0eh;display on, cursor blinking
+00AA 1197            112               acall com_wrt
+00AC 1183            113               acall delay
+                     114               ;mov a,#01h;clear and return to home
+                     115               ;acall com_wrt
+                     116               ;acall delay
+                     117               ;mov a,#06h;increment cursor to right
+                     118               ;acall com_wrt
+                     119               ;acall delay
+00AE 7480            120               mov a,#80h;position
+00B0 1197            121               acall com_wrt
+00B2 1183            122               acall delay
+00B4 22              123               ret
+                     124               
+A51 MACRO ASSEMBLER  8BY8_KEYPAD                                                          02/09/2015 21:52:05 PAGE     3
+
+                     125         ; E:     ;mov a,#01h
+                     126                 ;acall com_wrt
+                     127                 ;acall delay
+                     128          ;       mov a,#80h
+                     129           ;      acall com_wrt
+                     130            ;     acall delay
+                     131             ;    ret
+                     132            
+0300                 133            ORG 300h
+0300 313233          134     db_0: db '123'
+0303 343536          135     db_1: db '456'
+0306 373839          136     db_2: db '789'
+0309 2A3023          137     db_3: db '*0#'
+                     138     end
+A51 MACRO ASSEMBLER  8BY8_KEYPAD                                                          02/09/2015 21:52:05 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+COM_WRT. . . . . .  C ADDR   0097H   A   
+DATA_WRT . . . . .  C ADDR   008CH   A   
+DB_0 . . . . . . .  C ADDR   0300H   A   
+DB_1 . . . . . . .  C ADDR   0303H   A   
+DB_2 . . . . . . .  C ADDR   0306H   A   
+DB_3 . . . . . . .  C ADDR   0309H   A   
+DELAY. . . . . . .  C ADDR   0083H   A   
+DELAYA . . . . . .  C ADDR   0087H   A   
+EN . . . . . . . .  B ADDR   0080H.0 A   
+FIND . . . . . . .  C ADDR   0072H   A   
+INIT_LCD . . . . .  C ADDR   00A2H   A   
+K2 . . . . . . . .  C ADDR   0008H   A   
+MATCH. . . . . . .  C ADDR   0078H   A   
+OVER . . . . . . .  C ADDR   0014H   A   
+OVER1. . . . . . .  C ADDR   001DH   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+ROW_0. . . . . . .  C ADDR   0060H   A   
+ROW_1. . . . . . .  C ADDR   0065H   A   
+ROW_2. . . . . . .  C ADDR   006AH   A   
+ROW_3. . . . . . .  C ADDR   006FH   A   
+RS . . . . . . . .  B ADDR   0080H.1 A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

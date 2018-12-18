@@ -1,0 +1,177 @@
+A51 MACRO ASSEMBLER  8051OPERAND_DRCT_R_A__                                               02/09/2015 21:51:37 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8051OPERAND_drct_R_A_@.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8051OPERAND_drct_R_A_@.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\8051OPERAND_drc
+                      t_R_A_@.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS A SUBROUTINE THAT HANDLE DATA MANIPULATION OF FIRST OPERAND IN A THREE BYTE INSTRUCT
+                             IONS SUCH AS THE FOLLOWING:
+                       2     ; OPCODE A, ... or OPCODE Rn, ... or OPCODE @Ri, ... or OPCODE drct, ...
+                       3     ; MEMORY LOCATIONS USED: 33H
+                       4     ; REGISTERS USED: A
+                       5     ; FLAGS USED: 18H (USED FOR 2 DIFFERENT CASES: 'A' & '@' )
+                       6     
+0000                   7     ___8051OPERAND_d_R_A:           CALL            KEYPAD_ID
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 7 (8051OPERAND_drct_R_A_@.a, LINE 7): UNDEFINED SYMBOL (PASS-2)
+0003 3001FA            8                                                             JNB                     01H, ___8051OPERAND_d_R_A
+0006 C201              9                                                             CLR                     01H
+                      10                                                              
+0008 B4410A           11                                                             CJNE            A, #'A', ___8051OPERAND_d_R_A_1
+000B                  12                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 12 (8051OPERAND_drct_R_A_@.a, LINE 12): UNDEFINED SYMBOL (PASS-2)
+000E 855333           13                                                             MOV                     33H, 53H                                ; GOOD/OK       ; LOAD 1ST BYTE FOR INSTR. OF THE TYPE: OPCODE A, XX (ONLY)
+0011 D218             14                                                             SETB            18H
+0013 8034             15                                                             SJMP            ___8051OPERAND_d_R_A_4                          ; 
+                      16     
+0015 B44013           17     ___8051OPERAND_d_R_A_1:         CJNE            A, #'@', ___8051OPERAND_d_R_A_2           ; REMEMBER THAT THIS GUY '@' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE
+0018 7440             18                                                             MOV                     A, #'@'
+001A                  19                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 19 (8051OPERAND_drct_R_A_@.a, LINE 19): UNDEFINED SYMBOL (PASS-2)
+001D D218             20                                                             SETB            18H                                                                     ; USED TO IDENTIFY THIS ('@') SEGMENT OF THE SUBROUTINE
+001F 7452             21                                                             MOV                     A, #'R'                                                           ; THE 'R' WOUL BE DISPLAY BY THE FOLLOWING SR ie ___8051Rn
+0021 855633           22                                                             MOV                     33H, 56H                                                          ; LOAD THE NUMBER COMMON TO THE Rn(8) INSTRUCTION SETS
+0024                  23                                                             CALL            ___8051Rn
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 23 (8051OPERAND_drct_R_A_@.a, LINE 23): UNDEFINED SYMBOL (PASS-2)
+0027 C218             24                                                             CLR                     18H                                                                       ; GET FLAG READY FOR THE NEXT USAGE
+0029 801E             25                                                             SJMP            ___8051OPERAND_d_R_A_4
+                      26                                     
+002B B45208           27     ___8051OPERAND_d_R_A_2:         CJNE            A, #'R', ___8051OPERAND_d_R_A_3                         
+002E 855733           28                                                             MOV                     33H, 57H                                                          ; LOAD THE 1ST BYTE FOR THE Rn(8) INSTRUCTION SETS
+0031                  29                                                             CALL            ___8051Rn
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 29 (8051OPERAND_drct_R_A_@.a, LINE 29): UNDEFINED SYMBOL (PASS-2)
+0034 8013             30                                                             SJMP            ___8051OPERAND_d_R_A_4
+                      31     
+0036                  32     ___8051OPERAND_d_R_A_3:         CALL            ___8051NUMBERS_EX                               
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 32 (8051OPERAND_drct_R_A_@.a, LINE 32): UNDEFINED SYMBOL (PASS-2)
+0039 300F0D           33                                                             JNB                     0FH, ___8051OPERAND_d_R_A_4
+003C C20F             34                                                             CLR                     0FH
+003E                  35                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 35 (8051OPERAND_drct_R_A_@.a, LINE 35): UNDEFINED SYMBOL (PASS-2)
+0041 D55005           36                                                             DJNZ            50H, ___8051OPERAND_d_R_A_4
+0044 853435           37                                                             MOV                     35H, 34H                                                                ; SAVE THE HIGH ORDER BYTE
+0047 8000             38                                                             SJMP            ___8051OPERAND_d_R_A_4
+                      39     
+                      40     ; ---------------------------
+0049 C20F             41     ___8051OPERAND_d_R_A_4:         CLR                     0FH                                                                        ; GENERAL FLAG RESET (PREPARES FLAG FOR THE NEXT INSTRUCTION)
+004B 742C             42                                                             MOV                     A, #','
+A51 MACRO ASSEMBLER  8051OPERAND_DRCT_R_A__                                               02/09/2015 21:51:37 PAGE     2
+
+004D                  43                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 43 (8051OPERAND_drct_R_A_@.a, LINE 43): UNDEFINED SYMBOL (PASS-2)
+0050 7420             44                                                             MOV                     A, #' '
+0052                  45                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 45 (8051OPERAND_drct_R_A_@.a, LINE 45): UNDEFINED SYMBOL (PASS-2)
+                      46     
+0055                  47     ___8051OPERAND_d_R_A_6:         CALL            KEYPAD_ID
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 47 (8051OPERAND_drct_R_A_@.a, LINE 47): UNDEFINED SYMBOL (PASS-2)
+0058 3001FA           48                                                             JNB                     01H, ___8051OPERAND_d_R_A_6
+005B C201             49                                                             CLR                     01H
+                      50     
+005D B42312           51                                                             CJNE            A, #'#', ___8051OPERAND_d_R_A_7                 ; REMEMBER THAT THIS GUY '#' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE          
+0060 7423             52                                                             MOV                     A, #'#'
+0062                  53                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 53 (8051OPERAND_drct_R_A_@.a, LINE 53): UNDEFINED SYMBOL (PASS-2)
+0065 301805           54                                                             JNB                     18H, ___8051OPERAND_d_R_A_6_L1                  ; THIS IS DONE TO SEPARATE THE TWO POSSIBLE INSTRUCTIONS: OPCODE A, #XX & OPCODE ..., #XX
+0068 855233           55                                                             MOV                     33H, 52H                                        ; GOOD/OK       ; LOAD 1ST BYTE FOR INSTR. OF THE TYPE: OPCODE A, #XX (ONLY)
+006B 8003             56                                                             SJMP            ___8051OPERAND_d_R_A_6_L2
+                      57     
+006D 855433           58     ___8051OPERAND_d_R_A_6_L1:      MOV                     33H, 54H                                        ; GOOD/OK
+                      59                                                             
+0070 D218             60     ___8051OPERAND_d_R_A_6_L2:      SETB            18H                                                                             ; THIS FLAG COMBINES SOME FORMS OF INSTRUCTIONS
+                      61                                                                                                                                                                     ; SET TO SKIP CODE THAT CHANGES THE CONTENT OF 33H AT THE CODE SEGMENT BELOW
+0072                  62     ___8051OPERAND_d_R_A_7:         CALL            ___8051NUMBERS_EX                               
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 62 (8051OPERAND_drct_R_A_@.a, LINE 62): UNDEFINED SYMBOL (PASS-2)
+0075 300FDD           63                                                             JNB                     0FH, ___8051OPERAND_d_R_A_6
+0078 C20F             64                                                             CLR                     0FH
+007A                  65                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 65 (8051OPERAND_drct_R_A_@.a, LINE 65): UNDEFINED SYMBOL (PASS-2)
+007D D550D5           66                                                             DJNZ            50H, ___8051OPERAND_d_R_A_6
+                      67     
+0080 B210             68                                                             CPL                     10H
+0082 201002           69                                                             JB                      10H, ___8051OPERAND_d_R_A_8                             ; CHANGE PROGRAM SEQUENCE
+                      70                                                              
+0085 801D             71                                                             SJMP            ___8051OPERAND_d_R_A_9
+                      72     
+                      73     
+0087 853435           74     ___8051OPERAND_d_R_A_8:         MOV                     35H, 34H                                                                ; SAVE THE HIGH ORDER BYTE ie BYTE 2
+008A 20240F           75                                                             JB                      24H, ___8051OPERAND_d_R_A_E                             ; ONLY 'DJNZ Rn, XX' INSTR. CAN JUMP TO LABEL
+                      76                                                             ; ---- I THINK THIS IS THE PROPER PLACE WHERE THE MOV'S FLAG SHOULD BE PLACED
+008D 755002           77                                                             MOV                     50H, #02H                                                               ; REFILL COUNTER TO COUNT THE 3RD BYTE
+0090 742C             78                                                             MOV                     A, #','
+0092                  79                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 79 (8051OPERAND_drct_R_A_@.a, LINE 79): UNDEFINED SYMBOL (PASS-2)
+0095 7420             80                                                             MOV                     A, #' '
+0097                  81                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 81 (8051OPERAND_drct_R_A_@.a, LINE 81): UNDEFINED SYMBOL (PASS-2)
+009A 80B9             82                                                             SJMP            ___8051OPERAND_d_R_A_6
+                      83     
+009C C224             84     ___8051OPERAND_d_R_A_E:         CLR                     24H                                                                             ; GET FLAG READY FOR NEXT TIME OF USAGE
+009E C210             85                                                             CLR                     10H                                                                             ; RESET THE AFFECTED FLAG (PROGRAM BI-SEQUENCE SWITCH FLAG)
+00A0 D214             86                                                             SETB            14H                                                                             ; 2-BYTE INSTR. FLAG ID
+00A2 8006             87                                                             SJMP            ___8051OPERAND_d_R_A_EXIT
+                      88     
+00A4 201803           89     ___8051OPERAND_d_R_A_9:         JB                      18H, ___8051OPERAND_d_R_A_EXIT                  ; CHANGE THE CONTENT OF 33H IF INSTRUCTION IS IF THE FORM OPCODE ..., XX, XX
+00A7 855533           90                                                             MOV                     33H, 55H                                        ; GOOD/OK
+                      91     
+00AA C218             92     ___8051OPERAND_d_R_A_EXIT:      CLR                     18H                                                                              ; GET FLAG READY FOR THE NEXT USAGE (CLEARED FOR CODE SEGMENTS MISTAKENLY AFFECTED)
+A51 MACRO ASSEMBLER  8051OPERAND_DRCT_R_A__                                               02/09/2015 21:51:37 PAGE     3
+
+00AC D220             93                                                             SETB            20H                                                                             ; SUBROUTINE'S IDENTIFICATION FLAG.
+                      94                                                                                                                                                                     ; IT HELPS TO LATCH-IN CODES TO THE EXT. MEM (ie IN '___8051NUMBERS_LATCHED_IN' SR)
+00AE                  95                                                             CALL            ___8051NUMBERS_LATCHED_IN
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 95 (8051OPERAND_drct_R_A_@.a, LINE 95): UNDEFINED SYMBOL (PASS-2)
+00B1 22               96                                                             RET
+*** WARNING #A41 IN 96 (8051OPERAND_drct_R_A_@.a, LINE 96): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  8051OPERAND_DRCT_R_A__                                               02/09/2015 21:51:37 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                    T Y P E  V A L U E   ATTRIBUTES
+
+ASCII_2_HEX . . . . . . .    ----   -----       
+KEYPAD_ID . . . . . . . .    ----   -----       
+LCD_SHO . . . . . . . . .    ----   -----       
+___8051NUMBERS_EX . . . .    ----   -----       
+___8051NUMBERS_LATCHED_IN    ----   -----       
+___8051OPERAND_D_R_A. . .  C ADDR   0000H   A   
+___8051OPERAND_D_R_A_1. .  C ADDR   0015H   A   
+___8051OPERAND_D_R_A_2. .  C ADDR   002BH   A   
+___8051OPERAND_D_R_A_3. .  C ADDR   0036H   A   
+___8051OPERAND_D_R_A_4. .  C ADDR   0049H   A   
+___8051OPERAND_D_R_A_6. .  C ADDR   0055H   A   
+___8051OPERAND_D_R_A_6_L1  C ADDR   006DH   A   
+___8051OPERAND_D_R_A_6_L2  C ADDR   0070H   A   
+___8051OPERAND_D_R_A_7. .  C ADDR   0072H   A   
+___8051OPERAND_D_R_A_8. .  C ADDR   0087H   A   
+___8051OPERAND_D_R_A_9. .  C ADDR   00A4H   A   
+___8051OPERAND_D_R_A_E. .  C ADDR   009CH   A   
+___8051OPERAND_D_R_A_EXIT  C ADDR   00AAH   A   
+___8051RN . . . . . . . .    ----   -----       
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 16 ERROR(S)

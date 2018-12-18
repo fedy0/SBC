@@ -1,0 +1,488 @@
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\KEYPAD_IDLAST TEST.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE KEYPAD_IDLAST TEST.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\KEYPAD_IDLAST TEST.
+                      obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;                               ROW     EQU     P3
+                       2     ;                               COL             EQU             P1      
+0000                   3                                     ORG     0000H
+0000 802E              4                                     JMP     MAIN
+                       5     ;------------------------------
+0030                   6                                     ORG     30H
+0030                   7     MAIN:
+                       8             ;                       CALL    LCD_DLY 
+0030 3179              9                                     CALL    LCD_SET
+0032 120137           10                                     LCALL  INTRO_MSG                                        ; C
+                             ALLS AN OSR TO DISPLAY SOME MESSAGE IN LINE 1 & 2
+0035                  11     M1:
+0035 1139             12                                     CALL    KEYPAD_ID
+0037 80FC             13                                     SJMP    M1
+                      14     
+0039                  15     KEYPAD_ID:
+                      16     ; THIS SUBROUTINE RETRIEVES DATA FROM THE KEYPAD AND IDENTIFIES THE KEY PRESSED
+                      17     ; IT STORES THE ASCII CODE OF THE KEY PRESSED IN THE CHARACTER DISPLAY MEMORY (ie CDM 31H)
+                      18     ; IT ALSO HAS IN IT SOME STATUTORY FLAGS SUCH AS: 01H(KEY PRESSED FLAG),
+                      19     ; ALSO HAS IN IT SOME STATUTORY MEMORY LOC SUCH AS: 30H(SUB MEM DELAY COUNTER 4 X 500ms), L
+                             OAD #01H IF KEY IS PRESSED
+                      20     
+                      21     ; ****************************** KEYPAD_ID
+0039 759000           22                                     MOV     P1, #00H                                ; MAKE P1 O
+                             UTPUT
+                      23     ;                               MOV             P3, #0FFH                               ; M
+                             AKE P3.0, P3.1, P3.4 & P3.5 INPUT PORTS AND SECURE THE OTHER PINS' SETTINGS
+003C D2B0             24                                     SETB    P3.0                                    ; MAKE THE 
+                             PINS CONNECTED TO THE ROWS INPUT PORT
+003E D2B1             25                                     SETB    P3.1                                    ; ie. P3.0,
+                              P3.1, P3.4, P3.5
+0040 D2B4             26                                     SETB    P3.4
+0042 D2B5             27                                     SETB    P3.5
+0044 E5B0             28                                     MOV     A, P3                                   ; READ THE 
+                             ROW
+                      29     ;                               ANL     A,#00110011B                    ; MASK THE 4 MSB (3
+                              COLUMNS & 1(P1.7) EMPTY PIN)
+0046 B43302           30                                     CJNE    A,#00110011B,KEY2               ; IS ANY KEY DEPRES
+                             SED? IF 'NO' RETURN TO KEYPAD_ID ELSE JUMP TO KEY2 FOR COMFIRMATION
+0049 2113             31                                     JMP     KEYFNL                                  ; THE ABOVE
+                              SEGMENT ENSURES THAT KEYPAD IS FREE BEFORE A NEW SCAN IS CARRIED OUT
+004B                  32     KEY2:   
+004B 3170             33                                     CALL    LCD_DLY                                 ; DELAY TO 
+                             DEBOUNCE KEYPAD AND REPEAT THE ABOVE SUBPROGRAM TO COMFIRM THAT A KEY WAS PRESSED
+004D 759000           34                                     MOV     P1, #00H                                ; MAKE P1 O
+                             UTPUT
+                      35     ;                               MOV             P3, #0FFH                               ; M
+                             AKE P3.0, P3.1, P3.4 & P3.5 INPUT PORTS AND SECURE THE OTHER PINS' SETTINGS
+0050 D2B0             36                                     SETB    P3.0                                    ; MAKE THE 
+                             PINS CONNECTED TO THE ROWS INPUT PORT
+0052 D2B1             37                                     SETB    P3.1                                    ; ie. P3.0,
+                              P3.1, P3.4, P3.5
+0054 D2B4             38                                     SETB    P3.4
+0056 D2B5             39                                     SETB    P3.5
+0058 E5B0             40                                     MOV     A,P3                                    ; READ THE 
+                             ROW AGAIN TO COMFIRM KEY DEPRESSED 
+005A 5433             41                                     ANL     A,#00110011B                    ; MASK THE FOLLOWIN
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     2
+
+                             G BITS' RESULTS READ FROM P3: D2, D3, D6 & D7 (THEY ARE NOT FROM ROW PINS)
+005C B43302           42                                     CJNE    A,#00110011B,KEY3               ; IS ANY KEY DEPRES
+                             SED? IF 'NO' RETURN TO KEYPAD_ID ELSE JUMP TO KEY3 FOR IDENTIFICATION
+005F 2113             43                                     JMP     KEYFNL
+                      44     ; ****************************** ROW SCAN STARTS
+0061                  45     KEY3:
+0061 7D06             46                                     MOV     R5,#06H                                 ; LOAD 6 IN
+                             TO R5 FOR ROW SCAN (NEEDED SCAN = 4 OF 6; THE OTHER 2 AT THE MIDDLE ARE USELESS)
+0063 44CC             47                                     ORL             A, #0CCH                                ; #
+                             0CCH = 11001100B. THIS IS DONE TO SKIP DELIBERATELY P3.2 & P3.3 DURING SCANNING
+                      48                                                                                                
+                                  ; P3.6 & P3.7 HAS BEEN TAKEN CARE OF (ie SKIP) BY THE BOTH INSTRUCTIONS JUST ABOVE
+0065                  49     KEY31:  
+0065 13               50                                     RRC     A                                               ; S
+                             CAN EACH OF THE 4 ROWS
+0066 5002             51                                     JNC     KEY4                                    ; IF CY = 0
+                             , A KEY HAS BEEN DEPRESSED ON THAT ROW JUMP TO KEY4 ELSE CONTINUE
+0068 DDFB             52                                     DJNZ    R5,KEY31                                ; SCAN NEXT
+                              ROW
+006A                  53     KEY4:
+006A BD0605           54                                     CJNE    R5,#6,KEY41                             ; IF R5 = 6
+                              LOAD ROW_1 ADDRESS AND JUMP TO KEY5 ELSE JUMP TO KEY41
+006D 900193           55                                     MOV     DPTR,#ROW_1
+0070 801A             56                                     JMP     KEY5
+0072                  57     KEY41:  
+0072 BD0505           58                                     CJNE    R5,#5,KEY42                             ; IF R5 = 5
+                              LOAD ROW_2 ADDRESS AND JUMP TO KEY5 ELSE JUMP KEY42
+0075 90019B           59                                     MOV     DPTR,#ROW_2
+0078 8012             60                                     JMP     KEY5
+007A                  61     KEY42:  
+007A BD0205           62                                     CJNE    R5,#2,KEY43                             ; IF R5 = 2
+                              LOAD ROW_3 ADDRESS AND JUMP TO KEY5 ELSE JUMP KEY543
+007D 9001A3           63                                     MOV     DPTR,#ROW_3
+0080 800A             64                                     JMP     KEY5
+0082                  65     KEY43:  
+0082 BD0105           66                                     CJNE    R5,#1,KEY44                             ; IF R5 = 1
+                              LOAD ROW_4 ADDRESS AND JUMP TO KEY5 ELSE JUMP KEY44
+0085 9001AB           67                                     MOV     DPTR,#ROW_4
+0088 8002             68                                     JMP     KEY5
+008A                  69     KEY44:                                                                                  
+008A 2113             70                                     JMP     KEYFNL                                  ; ERROR! RE
+                             TURN TO KEYPAD_ID (NO KEY DEPRESSED)
+                      71     ; *************************** COLUMN SCAN STARTS
+008C                  72     KEY5:                                                                   
+008C 7590FF           73                                     MOV     P1, #0FFH                               ; MAKE ALL 
+                             THE PINS CONNECTED TO THE COLUMNS INPUT (IT MAY MEAN CLEAR, JUST COMFIRM LATER!)
+008F D2B0             74                                     SETB    P3.0                                    ; MAKE THE 
+                             PINS CONNECTED TO THE ROWS INPUT PORT
+0091 D2B1             75                                     SETB    P3.1                                    ; ie. P3.0,
+                              P3.1, P3.4, P3.5
+0093 D2B4             76                                     SETB    P3.4
+0095 D2B5             77                                     SETB    P3.5
+                      78     
+0097 7590FF           79                                     MOV     P1, #0FFH                               ; SET ALL C
+                             OLUMNS TO 1 ie CONNECT THEM TO VCC
+009A C2B0             80                                     CLR             P3.0                                    ; G
+                             ROUND THE ROWS
+009C C2B1             81                                     CLR             P3.1                                    ; i
+                             e. P3.0=P3.1=P3.4=P3.5=0
+009E C2B4             82                                     CLR             P3.4
+00A0 C2B5             83                                     CLR             P3.5
+                      84     
+00A2 E590             85                                     MOV     A, P1                                   ; READ THE 
+                             COLUMNS
+                      86     ; -- ---- - -- ------- --- - -                                                             
+                                          
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     3
+
+00A4 7D08             87                                     MOV     R5,#8                                   ; LOAD 8 IN
+                             TO R5 FOR COLUMN SCAN
+00A6                  88     KEY6:   
+00A6 13               89                                     RRC     A                                               ; S
+                             CAN EACH OF THE 8 COLUMNS
+00A7 5004             90                                     JNC     KEY7                                    ; IF CY = 0
+                             , A KEY HAS BEEN DEPRESSED ON THAT COLUMNS JUMP TO KEY7 ELSE CONTINUE
+00A9 DDFB             91                                     DJNZ    R5,KEY6                                 ; SCAN NEXT
+                              COLUMN
+00AB 8066             92                                     JMP     KEYFNL                                  ; ERROR! RE
+                             TURN TO KEYPAD_ID (NO KEY DEPRESSED)
+                      93     ; **************************** LOAD DATA ADDRESS        
+00AD                  94     KEY7:
+00AD BD0802           95                                     CJNE    R5,#8,KEY71                             ; IF R5 ~= 
+                             8 CONTINUE ELSE JUMP TO KEY71
+00B0 8041             96                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA. REMEMBER DPTR CONTAINS X00H ADRRESS HERE
+                      97                                                                                                
+                                  ; THUS THE DISPARITY AND WHILE INCREMENT OCCUR ALONG (DOWN THE PROGRAM)
+00B2                  98     KEY71:  
+00B2 BD0703           99                                     CJNE    R5,#7,KEY72                             ; IF R5 ~= 
+                             7 CONTINUE ELSE JUMP TO KEY72
+00B5 A3              100                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR ONCE FOR COLUMN 2
+00B6 803B            101                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00B8                 102     KEY72:  
+00B8 BD0604          103                                     CJNE    R5,#6,KEY73                             ; IF R5 ~= 
+                             6 CONTINUE ELSE JUMP TO KEY73
+00BB A3              104                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR TWICE FOR COLUMN 3
+00BC A3              105                                     INC     DPTR
+00BD 8034            106                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00BF                 107     KEY73:  
+00BF BD0505          108                                     CJNE    R5,#5,KEY74                     ; IF R5 ~= 5 CONTIN
+                             UE ELSE JUMP TO KEY74
+00C2 A3              109                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR THRICE FOR COLUMN 4
+00C3 A3              110                                     INC     DPTR
+00C4 A3              111                                     INC     DPTR    
+00C5 802C            112                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00C7                 113     KEY74:  
+00C7 BD0406          114                                     CJNE    R5,#4,KEY75                     ; IF R5 ~= 4 CONTIN
+                             UE ELSE JUMP TO KEY75
+00CA A3              115                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR 4 TIMES FOR COLUMN 5
+00CB A3              116                                     INC     DPTR
+00CC A3              117                                     INC     DPTR    
+00CD A3              118                                     INC     DPTR
+00CE 8023            119                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00D0                 120     KEY75:  
+00D0 BD0307          121                                     CJNE    R5,#3,KEY76                     ; IF R5 ~= 3 CONTIN
+                             UE ELSE JUMP TO KEY76
+00D3 A3              122                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR 5 TIMES FOR COLUMN 6
+00D4 A3              123                                     INC     DPTR
+00D5 A3              124                                     INC     DPTR    
+00D6 A3              125                                     INC     DPTR
+00D7 A3              126                                     INC     DPTR
+00D8 8019            127                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00DA                 128     KEY76:  
+00DA BD0208          129                                     CJNE    R5,#2,KEY77                     ; IF R5 ~= 2 CONTIN
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     4
+
+                             UE ELSE JUMP TO KEY77
+00DD A3              130                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR 6 TIMES FOR COLUMN 7
+00DE A3              131                                     INC     DPTR
+00DF A3              132                                     INC     DPTR    
+00E0 A3              133                                     INC     DPTR
+00E1 A3              134                                     INC     DPTR
+00E2 A3              135                                     INC     DPTR
+00E3 800E            136                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00E5                 137     KEY77:  
+00E5 BD0109          138                                     CJNE    R5,#1,KEY78                     ; IF R5 ~= 1 CONTIN
+                             UE ELSE JUMP TO KEY78
+00E8 A3              139                                     INC     DPTR                                    ; INCREMENT
+                              ADDRESS ALREADY IN DPTR 7 TIMES FOR COLUMN 8
+00E9 A3              140                                     INC     DPTR
+00EA A3              141                                     INC     DPTR
+00EB A3              142                                     INC     DPTR
+00EC A3              143                                     INC     DPTR
+00ED A3              144                                     INC     DPTR
+00EE A3              145                                     INC     DPTR    
+00EF 8002            146                                     JMP     KEY8                                    ; JUMP TO K
+                             EY8 AND PROVIDE DATA
+00F1                 147     KEY78:
+00F1 8020            148                                     JMP     KEYFNL                                  ; RETURN TO
+                              KEYPAD_ID
+                     149     
+00F3                 150     KEY8:                                                                                   ; E
+                             NSURES KEY PRESSED HAS BEEN RELEASED TO AVOID ERROR
+00F3 759000          151                                     MOV     P1, #00H                                ; MAKE P1 O
+                             UTPUT
+                     152     ;                               MOV             P3, #0F7H                               ; M
+                             AKE P3.0, P3.1, P3.4 & P3.5 INPUT PORTS AND SECURE THE OTHER PINS' SETTINGS
+00F6 D2B0            153                                     SETB    P3.0                                    ; MAKE THE 
+                             PINS CONNECTED TO THE ROWS INPUT PORT
+00F8 D2B1            154                                     SETB    P3.1                                    ; ie. P3.0,
+                              P3.1, P3.4, P3.5
+00FA D2B4            155                                     SETB    P3.4
+00FC D2B5            156                                     SETB    P3.5
+                     157     
+00FE E5B0            158                                     MOV     A, P3                                   ; READ THE 
+                             ROW
+0100 5433            159                                     ANL     A,#00110011B                    ; MASK THE 4 UNUSED
+                              BITS
+0102 B433EE          160                                     CJNE    A,#00110011B,KEY8               ; IS ANY KEY STILL 
+                             DEPRESSED? IF 'NO' CONTINUE ELSE REMAIN IN THE LOOP TILL ITS COMFIRMED 'NO'
+                     161     
+0105 200006          162                                     JB              00H, JJ
+0108 7401            163                                     MOV             A, #01H
+010A 3163            164                                     CALL    LCD_CMD
+010C D200            165                                     SETB    00H
+                     166                                                                                                
+                                  ; THE 8 INSTRUCTIONS JUST ABOVE IS USED TO PREVENT REPETITIVE DISPLAY ON KEY HOLD DOWN
+010E 7400            167     JJ:                             MOV     A,#0                                    ; CLEAR THE
+                              ACCUMULATOR
+0110 93              168                                     MOVC    A,@A+DPTR                               ; LOAD THE 
+                             CODE FOR DISPLAY
+0111 3186            169                                     CALL    LCD_SHO                                 ; CALL SUBR
+                             OUTINE TO DISPLAY DATA
+                     170     
+0113                 171     KEYFNL:
+0113 22              172                                     RET                                                        
+                                  ; RETURN TO KEYPAD_ID
+                     173     
+                     174     
+                     175     ; -----------------------------------------------------------------------------------------
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     5
+
+                             ----------------------------------------------
+0114                 176     DISP_CHAR:
+0114 D083            177                                     POP             DPH
+0116 D082            178                                     POP             DPL
+0118                 179     PRINT_TEXT:
+0118 E4              180                                     CLR             A
+0119 93              181                                     MOVC            A, @A+DPTR
+011A B40002          182                                     CJNE            A, #00H, LOOP
+011D 8007            183                                     SJMP            RETURN
+011F 120186          184     LOOP:                           LCALL           LCD_SHO
+0122 A3              185                                     INC             DPTR
+0123 020118          186                                     LJMP            PRINT_TEXT
+0126 7401            187     RETURN:                         MOV             A, #01H
+0128 73              188                                     JMP             @A+DPTR
+                     189     
+                     190     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0129                 191     GET_READY:
+                     192     ; THIS SUBROUTINE CHECKS BUSY FLAG (P0.7=D7) TO ENABLE COMMAND OR DATA LATCH-IN
+                     193     ; SFR BITS: P0.7 (D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+0129 D287            194                                             SETB            P0.7                               
+                                          ; MAKE P0.7 INPUT PORT
+012B C2A5            195                                             CLR             P2.5                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+012D D2A6            196                                             SETB            P2.6                               
+                                          ; R/W=1 READ COMMAND REG
+                     197                                                                                                
+                                                          ; READ COMMAND REG AND CHECK BUSY FLAG
+012F                 198     BACK:   
+012F C2B3            199                                             CLR             P3.3                               
+                                          ; E=0 L-TO-H PULSE
+0131 D2B3            200                                             SETB            P3.3                               
+                                          ; E=1 FOR L-TO-H PULSE
+0133 2087F9          201                                             JB                      P0.7, BACK                 
+                                                  ; STAY UNTIL BUSY FLAG=0
+0136 22              202                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                     203     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0137                 204     INTRO_MSG:
+                     205     ;
+                     206     ;
+                     207     ;                                       MOV                     A, #80H                    
+                                                  ; THIS INSTRUCTION MY NOT BE RELEVANT SINCE THIS MESSAGE IS CALLED IMMEDIATELY AFTER 
+                     208     ;                                       LCALL           LCD_CMD
+0137 120114          209                                     LCALL           DISP_CHAR
+013A 50726573        210                                             DB                      'Press 0 for MHEX',0       
+                                  ; LINE 1
+013E 73203020                
+0142 666F7220                
+0146 4D484558                
+014A 00                      
+014B 74C0            211                                             MOV                     A, #0C0H                   
+                                                  ; SET DDRAM ADDRESS TO LINE 2
+014D 3163            212                                             CALL            LCD_CMD                           
+014F 120114          213                                     LCALL           DISP_CHAR
+0152 50726573        214                                             DB                      'Press 1 for ASM',0        
+                                      ; LINE 2
+0156 73203120                
+015A 666F7220                
+015E 41534D00                
+0162 22              215                                             RET
+                     216     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0163                 217     LCD_CMD:
+                     218     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE COMMAND CHARATER TO BE DISPLAYED ON THE LCD
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     6
+
+                     219     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR COMMAND TO BE LATCHED-IN
+                     220     ; OPERATING REGISTER: A
+                     221     ; SFR BITS: P0 (LCD DATA PORT D0-D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+                     222      
+0163 3129            223                                             ACALL           GET_READY                          
+                                          ; IS LCD READY?
+0165 F580            224                                             MOV             P0, A                              
+                                          ; LATCH COMMAND INTO LCD DATA PORT        
+0167 C2A5            225                                             CLR             P2.5                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0169 C2A6            226                                             CLR                     P2.6                       
+                                                  ; WRITE
+016B D2B3            227                                             SETB            P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+016D C2B3            228                                             CLR             P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+016F 22              229                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                     230     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0170                 231     LCD_DLY:
+0170 7E32            232                                             MOV   R6,#50
+0172                 233     HERE2:
+0172 7F32            234                                             MOV   R7,#50
+0174                 235     HERE1:
+0174 DFFE            236                                             DJNZ   R7,HERE1 
+0176 DEFA            237                                             DJNZ   R6,HERE2
+0178 22              238                                             RET
+                     239     
+                     240     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0179                 241     LCD_SET:
+                     242     ; THIS SUBROUTINE SETS THE MODE OF OPERATION OF THE LCD
+                     243     ; IT CALLS LCD_CMD OSR TO LATCH-IN THE COMMAND
+                     244     ; OPERATING REGISTER: A
+0179 7438            245                                             MOV     A, #38H                                 ; 5
+                              X 7 MATRIX DISPLAY
+017B 3163            246                                             CALL    LCD_CMD                                 ; L
+                             ATCH COMMAND JUST ABOVE INTO THE LCD
+017D 740C            247                                             MOV     A, #0CH                                 ; D
+                             ISPLAY ON SECOND LINE
+017F 3163            248                                             CALL    LCD_CMD                                 ; L
+                             ATCH COMMAND JUST ABOVE INTO THE LCD
+0181 7406            249                                             MOV     A, #06H                                 ; I
+                             NCREMENT FROM LEFT TO RIGHT
+0183 3163            250                                             CALL    LCD_CMD                                 ; L
+                             ATCH COMMAND JUST ABOVE INTO THE LCD
+0185 22              251                                             RET                                                
+                                          ; RETURN TO THE CALLER PROGRAM
+                     252     
+                     253     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0186                 254     LCD_SHO:
+                     255     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE DATA CHARATER TO BE DISPLAYED ON THE LCD
+                     256     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR DATA TO BE LATCHED-IN
+                     257     ; OPERATING REGISTER: A
+                     258     ; SFR BITS: P0 (LCD DATA PORT D0-D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+0186 3129            259                                             ACALL           GET_READY                          
+                                          ; IS LCD READY?
+0188 F580            260                                             MOV             P0, A                              
+                                          ; LATCH DATA INTO LCD DATA PORT 
+018A D2A5            261                                             SETB            P2.5                               
+                                          ; RS=1, ACCESS LCD DATA REG
+018C C2A6            262                                             CLR                     P2.6                       
+                                                  ; R/!W=0, WRITE
+018E D2B3            263                                             SETB            P3.3                               
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     7
+
+                                          ; H-TO-L PULSE TO LATCH-IN
+0190 C2B3            264                                             CLR             P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+0192 22              265                                             RET
+                     266     
+                     267     ; **********************************************
+0193 30313233        268     ROW_1:                          DB                      '0','1','2','3','4','5','6','7'    
+                                  ; DATA STORED IN ASCII CODE
+0197 34353637                
+019B 45525455        269     ROW_2:                          DB                      'E','R','T','U','I','O','P','8'
+019F 494F5038                
+01A3 41534446        270     ROW_3:                          DB                      'A','S','D','F','H','J','L','9'
+01A7 484A4C39                
+01AB 5A584356        271     ROW_4:                          DB                      'Z','X','C','V','B','N','M','*'    
+                                  ; '*' IS RESERVED FOR THE FUNCTION 'NEXT'
+01AF 424E4D2A                
+                     272                                             END
+A51 MACRO ASSEMBLER  KEYPAD_IDLAST_TEST                                                   12/24/2014 16:42:41 PAGE     8
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BACK . . . . . . .  C ADDR   012FH   A   
+DISP_CHAR. . . . .  C ADDR   0114H   A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+GET_READY. . . . .  C ADDR   0129H   A   
+HERE1. . . . . . .  C ADDR   0174H   A   
+HERE2. . . . . . .  C ADDR   0172H   A   
+INTRO_MSG. . . . .  C ADDR   0137H   A   
+JJ . . . . . . . .  C ADDR   010EH   A   
+KEY2 . . . . . . .  C ADDR   004BH   A   
+KEY3 . . . . . . .  C ADDR   0061H   A   
+KEY31. . . . . . .  C ADDR   0065H   A   
+KEY4 . . . . . . .  C ADDR   006AH   A   
+KEY41. . . . . . .  C ADDR   0072H   A   
+KEY42. . . . . . .  C ADDR   007AH   A   
+KEY43. . . . . . .  C ADDR   0082H   A   
+KEY44. . . . . . .  C ADDR   008AH   A   
+KEY5 . . . . . . .  C ADDR   008CH   A   
+KEY6 . . . . . . .  C ADDR   00A6H   A   
+KEY7 . . . . . . .  C ADDR   00ADH   A   
+KEY71. . . . . . .  C ADDR   00B2H   A   
+KEY72. . . . . . .  C ADDR   00B8H   A   
+KEY73. . . . . . .  C ADDR   00BFH   A   
+KEY74. . . . . . .  C ADDR   00C7H   A   
+KEY75. . . . . . .  C ADDR   00D0H   A   
+KEY76. . . . . . .  C ADDR   00DAH   A   
+KEY77. . . . . . .  C ADDR   00E5H   A   
+KEY78. . . . . . .  C ADDR   00F1H   A   
+KEY8 . . . . . . .  C ADDR   00F3H   A   
+KEYFNL . . . . . .  C ADDR   0113H   A   
+KEYPAD_ID. . . . .  C ADDR   0039H   A   
+LCD_CMD. . . . . .  C ADDR   0163H   A   
+LCD_DLY. . . . . .  C ADDR   0170H   A   
+LCD_SET. . . . . .  C ADDR   0179H   A   
+LCD_SHO. . . . . .  C ADDR   0186H   A   
+LOOP . . . . . . .  C ADDR   011FH   A   
+M1 . . . . . . . .  C ADDR   0035H   A   
+MAIN . . . . . . .  C ADDR   0030H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PRINT_TEXT . . . .  C ADDR   0118H   A   
+RETURN . . . . . .  C ADDR   0126H   A   
+ROW_1. . . . . . .  C ADDR   0193H   A   
+ROW_2. . . . . . .  C ADDR   019BH   A   
+ROW_3. . . . . . .  C ADDR   01A3H   A   
+ROW_4. . . . . . .  C ADDR   01ABH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,636 @@
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\KEYPAD_ID_TRIAL_ONLINE.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE KEYPAD_ID_TRIAL_ONLINE.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\KEYPAD_ID_TRIAL
+                      _ONLINE.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  00A0                 1     EN equ P2.0
+                       2     
+  00A1                 3     RS equ P2.1
+                       4     
+  00A2                 5     RW equ P2.2
+                       6     
+0000 7438              7     mov A,#38H            ; Setting Up the LCD
+                       8     
+0002 12009F            9     lcall command
+                      10     
+0005 740E             11     mov A,#0EH            ; Display On
+                      12     
+0007 12009F           13     lcall command
+                      14     
+000A 7406             15     mov A,#06H            ; Entry Mode  
+                      16     
+000C 12009F           17     lcall command
+                      18     
+000F 7482             19     mov a,#82H
+                      20     
+0011 12009F           21     lcall command
+                      22     
+0014 1201CE           23     lcall disp            ;      Function Disp Called
+                      24     
+0017 7402             25     mov a,#02H            ; Setting DDRAM Address to Home position
+                      26     
+0019 12009F           27     lcall command
+                      28     
+001C 1200DF           29     lcall delay1
+                      30     
+                      31      
+                      32     
+                      33     ; Displays BOTSKOOL SHOBHIT ON FIRST LINE OF LCD
+                      34     
+001F 7442             35     mov a,#'B'
+                      36     
+0021 1200BE           37     lcall datw
+                      38     
+0024 00               39     NOP
+                      40     
+0025 7430             41     mov a,#'0'
+                      42     
+0027 1200BE           43     lcall datw
+                      44     
+002A 00               45     NOP
+                      46     
+002B 7454             47     mov a,#'T'
+                      48     
+002D 1200BE           49     lcall datw
+                      50     
+0030 7453             51     mov a,#'S'
+                      52     
+0032 1200BE           53     lcall datw
+                      54     
+0035 00               55     NOP
+                      56     
+0036 744B             57     mov a,#'K'
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     2
+
+                      58     
+0038 1200BE           59     lcall datw
+                      60     
+003B 00               61     NOP
+                      62     
+003C 7430             63     mov a,#'0'
+                      64     
+003E 1200BE           65     lcall datw
+                      66     
+0041 00               67     NOP
+                      68     
+0042 7430             69     mov a,#'0'
+                      70     
+0044 1200BE           71     lcall datw
+                      72     
+0047 00               73     NOP
+                      74     
+0048 744C             75     mov a,#'L'
+                      76     
+004A 1200BE           77     lcall datw
+                      78     
+004D 00               79     NOP
+                      80     
+004E 7420             81     mov a,#' '
+                      82     
+0050 1200BE           83     lcall datw
+                      84     
+0053 00               85     NOP
+                      86     
+0054 7453             87     mov a,#'S'
+                      88     
+0056 1200BE           89     lcall datw
+                      90     
+0059 00               91     NOP
+                      92     
+005A 7448             93     mov a,#'H'
+                      94     
+005C 1200BE           95     lcall datw
+                      96     
+005F 00               97     NOP
+                      98     
+0060 744F             99     mov a,#'O'
+                     100     
+0062 1200BE          101     lcall datw
+                     102     
+0065 00              103     NOP
+                     104     
+0066 7442            105     mov a,#'B'
+                     106     
+0068 1200BE          107     lcall datw
+                     108     
+006B 00              109     NOP
+                     110     
+006C 7448            111     mov a,#'H'
+                     112     
+006E 1200BE          113     lcall datw
+                     114     
+0071 00              115     NOP
+                     116     
+0072 7449            117     mov a,#'I'
+                     118     
+0074 1200BE          119     lcall datw
+                     120     
+0077 00              121     NOP
+                     122     
+0078 7454            123     mov a,#'T'
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     3
+
+                     124     
+007A 1200BE          125     lcall datw
+                     126     
+007D 74FF            127     MOV A,#255   ; Moving Value 255 to PORT 3
+                     128     
+007F F5B0            129     MOV P3,A
+                     130     
+                     131     ; Keypad Scan Begins
+                     132     
+0081                 133     sd:
+                     134     
+0081 1200DF          135     lcall delay1
+                     136     
+0084 1200E8          137     lcall key1
+                     138     
+0087 1200DA          139     lcall delay
+                     140     
+008A 120123          141     lcall key2
+                     142     
+008D 1200DA          143     lcall delay
+                     144     
+0090 12015C          145     lcall key3
+                     146     
+0093 1200DA          147     lcall delay
+                     148     
+0096 120195          149     lcall key4
+                     150     
+0099 1200DA          151     lcall delay
+                     152     
+009C 120081          153     lcall sd
+                     154     
+                     155      
+                     156     
+                     157      
+                     158     
+                     159      
+                     160     
+                     161      
+                     162     
+                     163     ; Function to Send Commands to LCD
+                     164     
+009F                 165     command:
+                     166     
+009F C2A2            167     clr RW
+                     168     
+00A1 C2A1            169     clr RS
+                     170     
+00A3 D2A0            171     setB EN
+                     172     
+00A5 F590            173     MOV P1,A
+                     174     
+00A7 1200DA          175     lcall delay
+                     176     
+00AA C2A0            177     clr EN
+                     178     
+00AC 22              179     RET
+                     180     
+                     181      
+                     182     
+                     183     ; Function to Clear the DDRAM Content
+                     184     
+00AD                 185     clear:
+                     186     
+00AD 7401            187     mov A,#01H
+                     188     
+00AF 12009F          189     lcall command
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     4
+
+                     190     
+00B2 1200DA          191     lcall delay
+                     192     
+00B5 7402            193     mov A,#02H ; Set The DDRAM Address to Home Position
+                     194     
+00B7 12009F          195     lcall command
+                     196     
+00BA 1200DA          197     lcall delay
+                     198     
+00BD 22              199     RET
+                     200     
+                     201     ; Function to Display Data on LCD Screen
+                     202     
+00BE                 203     datw:
+                     204     
+00BE D2A1            205     SETB RS
+                     206     
+00C0 C2A2            207     clr RW
+                     208     
+00C2 D2A0            209     SETB EN
+                     210     
+00C4 F590            211     MOV P1,A
+                     212     
+00C6 1200DA          213     lcall delay
+                     214     
+00C9 C2A0            215     clr EN
+                     216     
+00CB 22              217     RET
+                     218     
+                     219      
+                     220     
+                     221     ;Function to Display The Key Pressed
+                     222     
+00CC                 223     datw1:
+                     224     
+00CC 1200DF          225     lcall delay1
+                     226     
+00CF 1201CE          227     lcall disp
+                     228     
+00D2 1200DF          229     lcall delay1
+                     230     
+00D5 EF              231     MOV A,R7
+                     232     
+00D6 1200BE          233     lcall datw
+                     234     
+00D9 22              235     RET
+                     236     
+                     237      
+                     238     
+                     239     ; Generating Small Delay
+                     240     
+00DA                 241     delay:
+                     242     
+00DA 78FF            243     mov r0,#255
+                     244     
+00DC D8FE            245     loop: DJNZ r0,loop;
+                     246     
+00DE 22              247     RET
+                     248     
+                     249      
+                     250     
+                     251     ; Generating a Bigger Delay
+                     252     
+00DF                 253     delay1:
+                     254     
+00DF 79FF            255     mov r1,#255
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     5
+
+                     256     
+00E1 7B78            257     loop1: mov r3,#120
+                     258     
+00E3 DBFE            259     loop2: djnz r3,loop2 
+                     260     
+00E5 D9FA            261            djnz r1,loop1
+                     262     
+00E7 22              263     RET
+                     264     
+                     265      
+                     266     
+                     267     ; Checking for Key Press on The First Column of 4x4 Matrix
+                     268     
+                     269      
+                     270     
+00E8                 271     KEY1:
+                     272     
+00E8 ED              273     MOV A,r5
+                     274     
+00E9 FE              275     MOV r6,A
+                     276     
+00EA C2B4            277     clr p3.4
+                     278     
+                     279      
+                     280     
+00EC E5B0            281     MOV A,p3
+                     282     
+00EE 540F            283     ANL A,#0FH
+                     284     
+00F0 FA              285     MOV r2,A
+                     286     
+00F1 BA0E08          287     cjne r2,#14,n1
+                     288     
+00F4 7F31            289     MOV r7,#'1'
+                     290     
+00F6 1200CC          291     lcall datw1
+                     292     
+00F9 1200DF          293     lcall delay1
+                     294     
+                     295      
+                     296     
+00FC BA0D08          297     n1: cjne r2,#13,n2
+                     298     
+00FF 7F35            299     mov r7,#'5'
+                     300     
+0101 1200CC          301     lcall datw1
+                     302     
+0104 1200DF          303     lcall delay1
+                     304     
+0107 BA0B08          305     n2: cjne r2,#11,n3
+                     306     
+010A 7F39            307     mov r7,#'9'
+                     308     
+010C 1200CC          309     lcall datw1
+                     310     
+010F 1200DF          311     lcall delay1
+                     312     
+0112 BA0708          313     n3: cjne r2,#7,n4
+                     314     
+0115 7F44            315     mov r7,#'D'
+                     316     
+0117 1200CC          317     lcall datw1
+                     318     
+011A 1200DF          319     lcall delay1
+                     320     
+011D 1200DF          321     n4: lcall delay1
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     6
+
+                     322     
+0120 D2B4            323     SETB P3.4
+                     324     
+0122 22              325     RET
+                     326     
+                     327      
+                     328     
+                     329     ; Checking for Key Press on the Second Column of 4x4 Matrix
+                     330     
+0123                 331     KEY2:
+                     332     
+0123 C2B5            333     clr p3.5
+                     334     
+0125 E5B0            335     MOV A,p3
+                     336     
+0127 540F            337     ANL A,#0FH
+                     338     
+0129 FA              339     MOV r2,A
+                     340     
+                     341      
+                     342     
+012A BA0E08          343     cjne r2,#14,q1
+                     344     
+012D 7F32            345     mov r7,#'2'
+                     346     
+012F 1200CC          347     lcall datw1
+                     348     
+0132 1200DF          349     lcall delay1
+                     350     
+0135 BA0D08          351     q1: cjne r2,#13,q2
+                     352     
+0138 7F36            353     mov r7,#'6'
+                     354     
+013A 1200CC          355     lcall datw1
+                     356     
+013D 1200DF          357     lcall delay1
+                     358     
+0140 BA0B08          359     q2: cjne r2,#11,q3
+                     360     
+0143 7F41            361     mov r7,#65; A=65
+                     362     
+0145 1200CC          363     lcall datw1
+                     364     
+0148 1200DF          365     lcall delay1
+                     366     
+014B BA0708          367     q3: cjne r2,#7,q4
+                     368     
+014E 7F45            369     mov r7,#'E'
+                     370     
+0150 1200CC          371     lcall datw1
+                     372     
+0153 1200DF          373     lcall delay1
+                     374     
+0156 1200DA          375     q4: lcall delay
+                     376     
+0159 D2B5            377     SETB p3.5
+                     378     
+015B 22              379     RET
+                     380     
+                     381      
+                     382     
+                     383     ; Checking for Key Press On The Third Column of 4x4 Matrix
+                     384     
+                     385      
+                     386     
+015C                 387     KEY3:
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     7
+
+                     388     
+015C C2B6            389     clr p3.6
+                     390     
+015E E5B0            391     MOV A,p3
+                     392     
+0160 540F            393     ANL A,#0FH
+                     394     
+0162 FA              395     MOV r2,A
+                     396     
+                     397      
+                     398     
+0163 BA0E08          399     cjne r2,#14,w1
+                     400     
+0166 7F33            401     mov r7,#'3'
+                     402     
+0168 1200CC          403     lcall datw1
+                     404     
+016B 1200DF          405     lcall delay1
+                     406     
+016E BA0D08          407     w1: cjne r2,#13,w2
+                     408     
+0171 7F37            409     mov r7,#'7'
+                     410     
+0173 1200CC          411     lcall datw1
+                     412     
+0176 1200DF          413     lcall delay1
+                     414     
+0179 BA0B08          415     w2: cjne r2,#11,w3
+                     416     
+017C 7F42            417     mov r7,#'B'
+                     418     
+017E 1200CC          419     lcall datw1
+                     420     
+0181 1200DF          421     lcall delay1
+                     422     
+0184 BA0708          423     w3: cjne r2,#7,w4
+                     424     
+0187 7F46            425     mov r7,#'F'
+                     426     
+0189 1200CC          427     lcall datw1
+                     428     
+018C 1200DF          429     lcall delay1
+                     430     
+018F 1200DF          431     w4: lcall delay1
+                     432     
+0192 D2B6            433     SETB p3.6
+                     434     
+0194 22              435     RET
+                     436     
+                     437      
+                     438     
+                     439     ; Checking for Key Press on the Fourth Column of 4x4 Matrix
+                     440     
+0195                 441     KEY4:
+                     442     
+0195 C2B7            443     clr p3.7
+                     444     
+0197 E5B0            445     MOV A,p3
+                     446     
+0199 540F            447     ANL A,#0FH
+                     448     
+019B FA              449     MOV r2,A
+                     450     
+019C BA0E08          451     cjne r2,#14,e1
+                     452     
+019F 7F34            453     mov r7,#'4'
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     8
+
+                     454     
+01A1 1200CC          455     lcall datw1
+                     456     
+01A4 1200DF          457     lcall delay1
+                     458     
+01A7 BA0D08          459     e1: cjne r2,#13,e2
+                     460     
+01AA 7F38            461     mov r7,#'8'
+                     462     
+01AC 1200CC          463     lcall datw1
+                     464     
+01AF 1200DF          465     lcall delay1
+                     466     
+01B2 BA0B08          467     e2: cjne r2,#11,e3
+                     468     
+01B5 7F43            469     mov r7,#'C'
+                     470     
+01B7 1200CC          471     lcall datw1
+                     472     
+01BA 1200DF          473     lcall delay1
+                     474     
+01BD BA0708          475     e3: cjne r2,#7,e4
+                     476     
+01C0 7F47            477     mov r7,#'G'
+                     478     
+01C2 1200CC          479     lcall datw1
+                     480     
+01C5 1200DF          481     lcall delay1
+                     482     
+01C8 1200DF          483     e4: lcall delay1
+                     484     
+01CB D2B7            485     SETB p3.7
+                     486     
+01CD 22              487     RET
+                     488     
+                     489      
+                     490     
+01CE                 491     disp:
+                     492     
+01CE 74C0            493     mov a,#0c0H       ; Setting DDRAM Address on Second Line
+                     494     
+01D0 12009F          495     lcall command
+                     496     
+                     497      
+                     498     
+                     499     ; Clearing the Previous Key Pressed Information from Screen
+                     500     
+01D3 7420            501     mov a,#' '
+                     502     
+01D5 1200BE          503     lcall datw
+                     504     
+01D8 7420            505     mov a,#' '
+                     506     
+01DA 1200BE          507     lcall datw
+                     508     
+01DD 7420            509     mov a,#' '
+                     510     
+01DF 1200BE          511     lcall datw
+                     512     
+01E2 7420            513     mov a,#' '
+                     514     
+01E4 1200BE          515     lcall datw
+                     516     
+01E7 7420            517     mov a,#' '
+                     518     
+01E9 1200BE          519     lcall datw
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE     9
+
+                     520     
+01EC 7420            521     mov a,#' '
+                     522     
+01EE 1200BE          523     lcall datw
+                     524     
+                     525      
+                     526     
+01F1 74C0            527     mov a,#0c0H    ; Setting DDRAM Address on Second Line To Display "Key Pressed"
+                     528     
+01F3 12009F          529     lcall command
+                     530     
+                     531      
+                     532     
+                     533     ; Display "KEY" and Pressed Information
+                     534     
+01F6 7420            535     mov a,#' '
+                     536     
+01F8 1200BE          537     lcall datw
+                     538     
+01FB 744B            539     mov a,#'K'
+                     540     
+01FD 1200BE          541     lcall datw
+                     542     
+0200 7445            543     mov a,#'E'
+                     544     
+0202 1200BE          545     lcall datw
+                     546     
+0205 7459            547     mov a,#'Y'
+                     548     
+0207 1200BE          549     lcall datw
+                     550     
+020A 7420            551     mov a,#' '
+                     552     
+020C 1200BE          553     lcall datw
+                     554     
+020F 22              555     RET
+                     556     
+                     557     END
+                             
+                              
+A51 MACRO ASSEMBLER  KEYPAD_ID_TRIAL_ONLINE                                               12/24/2014 23:53:27 PAGE    10
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+CLEAR. . . . . . .  C ADDR   00ADH   A   
+COMMAND. . . . . .  C ADDR   009FH   A   
+DATW . . . . . . .  C ADDR   00BEH   A   
+DATW1. . . . . . .  C ADDR   00CCH   A   
+DELAY. . . . . . .  C ADDR   00DAH   A   
+DELAY1 . . . . . .  C ADDR   00DFH   A   
+DISP . . . . . . .  C ADDR   01CEH   A   
+E1 . . . . . . . .  C ADDR   01A7H   A   
+E2 . . . . . . . .  C ADDR   01B2H   A   
+E3 . . . . . . . .  C ADDR   01BDH   A   
+E4 . . . . . . . .  C ADDR   01C8H   A   
+EN . . . . . . . .  B ADDR   00A0H.0 A   
+KEY1 . . . . . . .  C ADDR   00E8H   A   
+KEY2 . . . . . . .  C ADDR   0123H   A   
+KEY3 . . . . . . .  C ADDR   015CH   A   
+KEY4 . . . . . . .  C ADDR   0195H   A   
+LOOP . . . . . . .  C ADDR   00DCH   A   
+LOOP1. . . . . . .  C ADDR   00E1H   A   
+LOOP2. . . . . . .  C ADDR   00E3H   A   
+N1 . . . . . . . .  C ADDR   00FCH   A   
+N2 . . . . . . . .  C ADDR   0107H   A   
+N3 . . . . . . . .  C ADDR   0112H   A   
+N4 . . . . . . . .  C ADDR   011DH   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+Q1 . . . . . . . .  C ADDR   0135H   A   
+Q2 . . . . . . . .  C ADDR   0140H   A   
+Q3 . . . . . . . .  C ADDR   014BH   A   
+Q4 . . . . . . . .  C ADDR   0156H   A   
+RS . . . . . . . .  B ADDR   00A0H.1 A   
+RW . . . . . . . .  B ADDR   00A0H.2 A   
+SD . . . . . . . .  C ADDR   0081H   A   
+W1 . . . . . . . .  C ADDR   016EH   A   
+W2 . . . . . . . .  C ADDR   0179H   A   
+W3 . . . . . . . .  C ADDR   0184H   A   
+W4 . . . . . . . .  C ADDR   018FH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

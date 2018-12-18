@@ -1,0 +1,133 @@
+A51 MACRO ASSEMBLER  8051OPERAND_A_DRCT_C                                                 01/17/2015 22:39:17 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8051OPERAND_A_drct_C.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8051OPERAND_A_drct_C.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\8051OPERAND_A_drc
+                      t_C.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS A SUBROUTINE THAT HANDLE DATA MANIPULATION OF FIRST OPERAND IN A THREE BYTE INSTRUCT
+                             IONS SUCH AS THE FOLLOWING:
+                       2     ; OPCODE A (53H) or OPCODE drct or OPCODE C
+                       3     ; MEMORY LOCATIONS USED: 33H
+                       4     ; REGISTERS USED: A
+                       5     ; FLAGS USED: 18H (USED FOR 2 DIFFERENT CASES: 'A' & '@' )
+                       6     
+0000                   7     ___8051OPERAND_A_drct_C:        CALL            LCD_SHO                                    
+                                                          ; SHOW CHARATER STORED IN ACC FROM THE CALLER PROGRAM
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 7 (8051OPERAND_A_drct_C.a, LINE 7): UNDEFINED SYMBOL (PASS-2)
+0003                   8     ___8051OPERAND_A_drct_:         CALL            KEYPAD_ID
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 8 (8051OPERAND_A_drct_C.a, LINE 8): UNDEFINED SYMBOL (PASS-2)
+0006 3001FA            9                                                             JNB                     01H, ___8051OPERAND_A_drct_
+0009 C201             10                                                             CLR                     01H                                                                             ; GET READY FOR THE NEXT KEY
+                      11     
+000B B4410A           12                                                             CJNE            A, #'A', ___8051OPERAND_A_drct_C_1
+000E                  13                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 13 (8051OPERAND_A_drct_C.a, LINE 13): UNDEFINED SYMBOL (PASS-2)
+0011 855333           14                                                             MOV                     33H, 53H                                                                ; LOAD BYTE 1 THAT WAS TEMPORARILY SAVED
+0014 D213             15                                                             SETB            13H                                                                             ; THIS IS A FLAG THAT INDICATES A 1-BYTE INSTR. (USED DURING LATCH-IN)
+0016 805D             16                                                             SJMP            ___8051OPERAND_A_drct_C_EXT
+                      17     
+0018 B4430A           18     ___8051OPERAND_A_drct_C_1:      CJNE            A, #'C', ___8051OPERAND_A_drct_C_2
+001B                  19                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 19 (8051OPERAND_A_drct_C.a, LINE 19): UNDEFINED SYMBOL (PASS-2)
+001E 855233           20                                                             MOV                     33H, 52H                                                                ; LOAD BYTE 1 THAT WAS TEMPORARILY SAVED
+0021 D213             21                                                             SETB            13H                                                                             ; THIS IS A FLAG THAT INDICATES A 1-BYTE INSTR. (USED DURING LATCH-IN)
+0023 8050             22                                                             SJMP            ___8051OPERAND_A_drct_C_EXT
+                      23     
+0025 202137           24     ___8051OPERAND_A_drct_C_2:      JB                      21H, ___8051OPERAND_A_drct_C_4                  ; DON'T CARRY OUT COMPARISON IN THIS SEGMENT IF THE CALLER INSTR. IS 'CPL or CLR')
+0028 B44017           25                                                             CJNE            A, #'@', ___8051OPERAND_A_drct_C_3              ; REMEMBER THAT THIS GUY '@' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE          
+002B 7440             26                                                             MOV                     A, #'@'
+002D                  27                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 27 (8051OPERAND_A_drct_C.a, LINE 27): UNDEFINED SYMBOL (PASS-2)
+0030 7452             28                                                             MOV                     A, #'R'
+0032 D218             29                                                             SETB            18H                                                                             ; USED TO SKIP SOME COMPARISON SEGMENT IN THE  ___8051Rn SR (ONLY FOR @Ri)
+0034 855633           30                                                             MOV                     33H, 56H                                                                ; LOAD BYTE 1 THAT WAS TEMPORARILY SAVED
+0037                  31                                                             CALL            ___8051Rn
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 31 (8051OPERAND_A_drct_C.a, LINE 31): UNDEFINED SYMBOL (PASS-2)
+003A C218             32                                                             CLR                     18H                                                                             ; GET REDY FOR THE NEXT TIME OF USAGE
+003C C20F             33                                                             CLR                     0FH                                                                             ; GET REDY FOR THE NEXT TIME OF USAGE 
+                      34                                                                                                                                                                     ; (IT WAS CLEAR BECOS IT WAS SET INSIDE ___8051Rn SR JUST ABOVE)
+003E D213             35                                                             SETB            13H                                                                             ; THIS IS A FLAG THAT INDICATES A 1-BYTE INSTR. (USED DURING LATCH-IN)
+0040 8033             36                                                             SJMP            ___8051OPERAND_A_drct_C_EXT
+                      37     
+0042 B4521A           38     ___8051OPERAND_A_drct_C_3:      CJNE            A, #'R', ___8051OPERAND_A_drct_C_4
+0045 855733           39                                                             MOV                     33H, 57H                                                                ; LOAD BYTE 1 THAT WAS TEMPORARILY SAVED
+0048 D222             40                                                             SETB            22H                                                                             ; MISCELLENOUS ONCE IDENTIFIIER FLAG SET TO JUMP A SEGMENT IN THE ___8051Rn SR
+004A                  41                                                             CALL            ___8051Rn
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 41 (8051OPERAND_A_drct_C.a, LINE 41): UNDEFINED SYMBOL (PASS-2)
+A51 MACRO ASSEMBLER  8051OPERAND_A_DRCT_C                                                 01/17/2015 22:39:17 PAGE     2
+
+004D C20F             42                                                             CLR                     0FH                                                                             ; GET REDY FOR THE NEXT TIME OF USAGE 
+                      43                                                                                                                                                                     ; (IT WAS CLEAR BECOS IT WAS SET INSIDE ___8051Rn SR JUST ABOVE)
+004F D213             44                                                             SETB            13H                                                                             ; THIS IS A FLAG THAT INDICATES A 1-BYTE INSTR. (USED DURING LATCH-IN)
+0051 C222             45                                                             CLR                     22H                                                                             ; MISCELLENOUS ONCE IDENTIFIIER FLAG CLEAERED
+0053 C213             46                                                             CLR                     13H                                                                             ; ITS NOT A 2-BYTE INSTRUCTION IF THE PROGRAM SEQUENCE PASSES UP TO HERE
+0055 742C             47                                                             MOV                     A, #','                                                                 ; OPCODE Rn,
+0057                  48                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 48 (8051OPERAND_A_drct_C.a, LINE 48): UNDEFINED SYMBOL (PASS-2)
+005A 7420             49                                                             MOV                     A, #' '                                                                  
+005C                  50                                                             CALL            LCD_SHO                                                                 ; OF COURSE THE CONTENT OF THE ACC. NOW WOULD CAUSE THE NEXT 
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 50 (8051OPERAND_A_drct_C.a, LINE 50): UNDEFINED SYMBOL (PASS-2)
+                      51                                                                                                                                                                     ; PROGRAM CODE FOLLOWINGS TO BOUNCE BACK TO THE BEGINNING 
+005F                  52     ___8051OPERAND_A_drct_C_4:      CALL            ___8051NUMBERS_EX                               
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 52 (8051OPERAND_A_drct_C.a, LINE 52): UNDEFINED SYMBOL (PASS-2)
+0062 300F9E           53                                                             JNB                     0FH, ___8051OPERAND_A_drct_                             ; RETURN TO THE BEGINNIG IF INPUT DATA IS NOT BTW 0 - F (HEX)
+0065 C20F             54                                                             CLR                     0FH                                                                             ; GET READY FOR THE NEXT USAGE
+0067                  55                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 55 (8051OPERAND_A_drct_C.a, LINE 55): UNDEFINED SYMBOL (PASS-2)
+006A D55096           56                                                             DJNZ            50H, ___8051OPERAND_A_drct_
+                      57     
+006D 853435           58                                                             MOV                     35H, 34H                                                                ; SAVE THE HIGH ORDER BYTE ie BYTE 2
+0070 855533           59                                                             MOV                     33H, 55H                                                                ; LOAD BYTE 1 THAT WAS TEMPORARILY SAVED
+0073 D214             60                                                             SETB            14H                                                                             ; THIS IS A FLAG THAT INDICATES A 2-BYTE INSTR. (USED DURING LATCH-IN)
+                      61     
+0075                  62     ___8051OPERAND_A_drct_C_EXT:
+0075 D220             63                                                             SETB            20H                                                                             ; SUBROUTINE'S IDENTIFICATION FLAG.
+                      64                                                                                                                                                                     ; IT HELPS TO LATCH-IN CODES TO THE EXT. MEM (ie IN '___8051NUMBERS_LATCHED_IN' SR)
+0077 C221             65                                                             CLR                     21H                                                                             ; GET READY FOR THE NEXT TIME OF USAGE (CPL or CLR INSTRUCTION IDENTIFICATION FLAG)
+0079                  66                                                             CALL            ___8051NUMBERS_LATCHED_IN
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 66 (8051OPERAND_A_drct_C.a, LINE 66): UNDEFINED SYMBOL (PASS-2)
+007C 22               67                                                             RET
+*** WARNING #A41 IN 67 (8051OPERAND_A_drct_C.a, LINE 67): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  8051OPERAND_A_DRCT_C                                                 01/17/2015 22:39:17 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                      T Y P E  V A L U E   ATTRIBUTES
+
+ASCII_2_HEX . . . . . . . .    ----   -----       
+KEYPAD_ID . . . . . . . . .    ----   -----       
+LCD_SHO . . . . . . . . . .    ----   -----       
+___8051NUMBERS_EX . . . . .    ----   -----       
+___8051NUMBERS_LATCHED_IN .    ----   -----       
+___8051OPERAND_A_DRCT_. . .  C ADDR   0003H   A   
+___8051OPERAND_A_DRCT_C . .  C ADDR   0000H   A   
+___8051OPERAND_A_DRCT_C_1 .  C ADDR   0018H   A   
+___8051OPERAND_A_DRCT_C_2 .  C ADDR   0025H   A   
+___8051OPERAND_A_DRCT_C_3 .  C ADDR   0042H   A   
+___8051OPERAND_A_DRCT_C_4 .  C ADDR   005FH   A   
+___8051OPERAND_A_DRCT_C_EXT  C ADDR   0075H   A   
+___8051RN . . . . . . . . .    ----   -----       
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 12 ERROR(S)

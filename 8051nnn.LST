@@ -1,0 +1,103 @@
+A51 MACRO ASSEMBLER  8051NNN                                                              01/17/2015 22:11:30 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8051nnn.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8051nnn.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\8051nnn.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS SR IS USE TO GENERATE THE THREE LEAST BIT OF 
+                       2     ; AN OPCODE OR OPERAND THAT USED R0 - R7 AS IN AN INSTRUCTION
+                       3     ; MEMORY LOCATION USED: 33H
+0000                   4     ___8051Rn:                              CALL            LCD_SHO                            
+                                                  ; DISPLAYS 'R' WHICH IS SAVED IN ACC. FROM THE CALLER PROGRAM
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 4 (8051nnn.a, LINE 4): UNDEFINED SYMBOL (PASS-2)
+0003                   5     ___8051Rn_:                             CALL            KEYPAD_ID
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 5 (8051nnn.a, LINE 5): UNDEFINED SYMBOL (PASS-2)
+0006 3001FA            6                                                     JNB                     01H, ___8051Rn_
+0009 C201              7                                                     CLR                     01H
+                       8     
+000B B43002            9                                                     CJNE            A, #'0', ___8051Rn_1
+000E 8039             10                                                     SJMP            ___8051Rn_8                                             ; NO NEED TO MANIPULATE FOR ZERO'S CASE SINCE 33H CONTAINS ITS INSTR SET
+                      11                                                                     
+0010 B43105           12     ___8051Rn_1:                    CJNE            A, #'1', ___8051Rn_2
+0013 433301           13                                                     ORL                     33H, #01H
+0016 8031             14                                                     SJMP            ___8051Rn_8     
+                      15                                                                     
+0018 2018E8           16     ___8051Rn_2:                    JB                      18H, ___8051Rn_                                 ; THIS LINE IS PECULIAR TO THE SR '___8051Rn'
+                      17                                                                                                                                             ; USED TO STOP COMPARISON FOR 'Ri' OPERAND TYPE (i = 0 or 1)
+001B B43205           18                                                     CJNE            A, #'2', ___8051Rn_3                            
+001E 433302           19                                                     ORL                     33H, #02H
+0021 8026             20                                                     SJMP            ___8051Rn_8     
+                      21     
+0023 B43305           22     ___8051Rn_3:                    CJNE            A, #'3', ___8051Rn_4                            
+0026 433303           23                                                     ORL                     33H, #03H
+0029 801E             24                                                     SJMP            ___8051Rn_8     
+                      25     
+002B B43405           26     ___8051Rn_4:                    CJNE            A, #'4', ___8051Rn_5                            
+002E 433304           27                                                     ORL                     33H, #04H
+0031 8016             28                                                     SJMP            ___8051Rn_8     
+                      29     
+0033 B43505           30     ___8051Rn_5:                    CJNE            A, #'5', ___8051Rn_6                            
+0036 433305           31                                                     ORL                     33H, #05H
+0039 800E             32                                                     SJMP            ___8051Rn_8     
+                      33     
+003B B43605           34     ___8051Rn_6:                    CJNE            A, #'6', ___8051Rn_7                            
+003E 433306           35                                                     ORL                     33H, #06H
+0041 8006             36                                                     SJMP            ___8051Rn_8     
+                      37     
+0043 B4371A           38     ___8051Rn_7:                    CJNE            A, #'7', ___8051Rn_EXIT                         
+0046 433307           39                                                     ORL                     33H, #07H
+                      40     
+0049 D20F             41     ___8051Rn_8:                    SETB            0FH                                                     ; IF BIT ADDR 0FH = 1 THE KEY PRESSED IS A VALID NUMBER ELSE 0FH = 0
+004B                  42                                                     CALL            LCD_SHO
+*** _________________________________________________________________________________________^
+*** ERROR #A45 IN 42 (8051nnn.a, LINE 42): UNDEFINED SYMBOL (PASS-2)
+004E 20180F           43                                                     JB                      18H, ___8051Rn_EXIT                     ; USED ONLY FOR THE @'S SEGMENT IN THE CALLER SR '___8051OPERAND_d_R_A'
+0051 20220C           44                                                     JB                      22H, ___8051Rn_EXIT                     ; USED ONLY FOR THE Rn'S SEGMENT IN THE CALLER SR '___8051OPERAND_A_drct_C'
+0054 202307           45                                                     JB                      23H, ___8051Rn_EXIT_
+0057                  46                                                     CALL            ___8051NUMBERS_LATCHED_IN       ; ELOO, WHICH PROGRAM/SR IS THIS CALL NECESSARY FOR AND THE FLAG JUST BELOW FOR?
+*** _________________________________________________________________________________________^
+*** ERROR #A45 IN 46 (8051nnn.a, LINE 46): UNDEFINED SYMBOL (PASS-2)
+005A C216             47                                                     CLR                     16H                                                     ; PREPARES FLAG FOR NEXT TIME OF USAGE
+005C 8002             48                                                     SJMP            ___8051Rn_EXIT
+                      49     
+A51 MACRO ASSEMBLER  8051NNN                                                              01/17/2015 22:11:30 PAGE     2
+
+005E D224             50     ___8051Rn_EXIT_:                SETB            24H                                                     ; THIS FLAG WOULD BE QUERIED BY THE CALLER PROGRAM (USED FOR IDing 'DJNZ Rn, ' INSTR
+                      51     
+0060 300FA0           52     ___8051Rn_EXIT:                 JNB                     0FH, ___8051Rn_
+0063 22               53                                                     RET
+*** WARNING #A41 IN 53 (8051nnn.a, LINE 53): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  8051NNN                                                              01/17/2015 22:11:30 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                    T Y P E  V A L U E   ATTRIBUTES
+
+KEYPAD_ID . . . . . . . .    ----   -----       
+LCD_SHO . . . . . . . . .    ----   -----       
+___8051NUMBERS_LATCHED_IN    ----   -----       
+___8051RN . . . . . . . .  C ADDR   0000H   A   
+___8051RN_. . . . . . . .  C ADDR   0003H   A   
+___8051RN_1 . . . . . . .  C ADDR   0010H   A   
+___8051RN_2 . . . . . . .  C ADDR   0018H   A   
+___8051RN_3 . . . . . . .  C ADDR   0023H   A   
+___8051RN_4 . . . . . . .  C ADDR   002BH   A   
+___8051RN_5 . . . . . . .  C ADDR   0033H   A   
+___8051RN_6 . . . . . . .  C ADDR   003BH   A   
+___8051RN_7 . . . . . . .  C ADDR   0043H   A   
+___8051RN_8 . . . . . . .  C ADDR   0049H   A   
+___8051RN_EXIT. . . . . .  C ADDR   0060H   A   
+___8051RN_EXIT_ . . . . .  C ADDR   005EH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 4 ERROR(S)

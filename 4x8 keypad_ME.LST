@@ -1,0 +1,267 @@
+A51 MACRO ASSEMBLER  4X8_KEYPAD_ME                                                        05/05/2015 20:14:44 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\4x8 keypad_ME.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 4x8 keypad_ME.asm SET(SMALL) DEBUG OBJECT(C:\sbcHex\4x8 keypad_ME.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS SUBROUTINE RETRIEVES DATA FROM THE KEYPAD AND IDENTIFIES THE KEY PRESSED
+                       2     ; IT STORES THE ASCII CODE OF THE KEY PRESSED IN THE CHARACTER DISPLAY MEMORY (ie CDM 31H)
+                       3     ; IT ALSO HAS IN IT SOME STATUTORY FLAGS SUCH AS: 01H(KEY PRESSED FLAG)
+                       4     
+                       5     
+                       6     
+                       7                             
+0000                   8                                             ORG                     00H
+                       9     
+0000 7590FF           10                                             MOV             P1,#0FFH                           
+                                          ; MAKE PORT1 AN INPUT PORT
+0003 75B00C           11                                             MOV             P3, #00001100B
+0006 1194             12                                     ACALL           LCD_SET
+                      13     
+0008 110C             14     M1:                                     CALL            KEYPAD_ID
+000A 80FC             15                                             SJMP            M1
+                      16            
+000C                  17     KEYPAD_ID:                      ;ACALL          LCD_DLY                                    
+                                  ; 20mS KEYBOARD/PAD DEBOUNCER
+000C 7590FF           18                                             MOV             P1,#0FFH                           
+                                          ; MAKE PORT1 AN INPUT PORT
+000F 75B00C           19                                             MOV             P3, #00001100B
+0012 E590             20                                     MOV             A, P1
+0014 B4FF02           21                                     CJNE            A, #11111111B, K_ID_1
+0017 8056             22                                             JMP             KEYFNL
+                      23            
+0019 118B             24     K_ID_1:                         ACALL           LCD_DLY                                    
+                                  ; 20mS KEYBOARD/PAD DEBOUNCER
+001B E590             25                                     MOV             A, P1
+001D B4FF02           26                                     CJNE            A, #11111111B, K_ID_2
+0020 804D             27                                             JMP             KEYFNL
+                      28            
+0022 75B0FE           29     K_ID_2:                         MOV             P3, #11111110B
+0025 E590             30                                     MOV             A, P1
+0027 B4FF1A           31                                     CJNE            A, #11111111B, ROW_0
+                      32            
+002A 75B0FD           33                                     MOV             P3, #11111101B
+002D E590             34                                     MOV             A, P1
+002F B4FF17           35                                     CJNE            A, #11111111B, ROW_1
+                      36            
+0032 75B0EF           37                                     MOV             P3, #11101111B
+0035 E590             38                                     MOV             A, P1
+0037 B4FF14           39                                     CJNE            A, #11111111B, ROW_2
+                      40            
+003A 75B0DF           41                                     MOV             P3, #11011111B
+003D E590             42                                             MOV             A, P1
+003F B4FF11           43                                             CJNE            A, #11111111B, ROW_3
+                      44           
+0042 802B             45                                             JMP             KEYFNL
+                      46            
+0044 900200           47     ROW_0:                          MOV             DPTR, #LT_ROW_1
+0047 800D             48                                     SJMP            K_ID_3                                     
+                                  ; FIND ROW 1
+                      49             
+0049 900208           50     ROW_1:                          MOV             DPTR, #LT_ROW_2
+004C 8008             51                                     SJMP            K_ID_3                                     
+                                  ; FIND ROW 2
+                      52     
+A51 MACRO ASSEMBLER  4X8_KEYPAD_ME                                                        05/05/2015 20:14:44 PAGE     2
+
+004E 900210           53     ROW_2:                          MOV             DPTR, #LT_ROW_3
+0051 8003             54                                     SJMP            K_ID_3                                     
+                                  ; FIND ROW 3
+                      55     
+0053 900218           56     ROW_3:                          MOV             DPTR, #LT_ROW_4
+                      57                                                                                                
+                                                          ; FIND ROW 4
+0056 13               58     K_ID_3:                         RRC             A
+0057 5003             59                                     JNC             K_ID_4                                     
+                                  ; MATCH
+0059 A3               60                                     INC             DPTR
+005A 80FA             61                                     SJMP            K_ID_3
+                      62           
+005C 118B             63     K_ID_4:                         ACALL           LCD_DLY                                    
+                                  ; THIS SR IS TO ENSURE THAT THE USER RELEASES THE KEY TO AVOID KEY REPETITION
+005E 7590FF           64                                             MOV             P1,#0FFH                           
+                                          ; MAKE PORT 1 AN INPUT PORT
+0061 75B00C           65                                             MOV             P3, #00001100B
+0064 E590             66                                             MOV             A, P1
+0066 B4FFF3           67                                     CJNE            A, #11111111B, K_ID_4
+                      68                                             
+0069 E4               69                                             CLR             A
+006A 93               70                                     MOVC            A, @A+DPTR
+                      71     ;                               MOV                     31H, A                             
+                                          ; TEMPORARY SAVE THE ASCII CHARACTERR OF THE KEY IDENTIFIED
+006B 118B             72                                             ACALL           LCD_DLY 
+                      73     ;                                       SETB            01H                                
+                                                  ; FLAG INDICATES A KEY IS PRESSED
+006D 11A9             74                                     ACALL           LCD_SHO
+006F 22               75     KEYFNL:                         RET                                                        
+                                                  ; RETURN TO KEYPAD_ID
+                      76            
+                      77     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0070                  78     GET_READY:
+                      79     ; THIS SUBROUTINE CHECKS BUSY FLAG (P0.7=D7) TO ENABLE COMMAND OR DATA LATCH-IN
+                      80     ; SFR BITS: P0.7 (D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+0070 D297             81                                             SETB            P1.7                               
+                                          ; MAKE P0.7 INPUT PORT
+0072 C2A5             82                                             CLR             P2.5                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0074 D2A6             83                                             SETB            P2.6                               
+                                          ; R/W=1 READ COMMAND REG
+                      84                                                                                                
+                                                          ; READ COMMAND REG AND CHECK BUSY FLAG
+0076                  85     BACK:   
+0076 C2B3             86                                             CLR             P3.3                               
+                                          ; E=0 L-TO-H PULSE
+0078 D2B3             87                                             SETB            P3.3                               
+                                          ; E=1 FOR L-TO-H PULSE
+007A 2097F9           88                                             JB                      P1.7, BACK                 
+                                                  ; STAY UNTIL BUSY FLAG=0
+007D 22               89                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                      90     
+                      91     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+007E                  92     LCD_CMD:
+                      93     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE COMMAND CHARATER TO BE DISPLAYED ON THE LCD
+                      94     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR COMMAND TO BE LATCHED-IN
+                      95     ; OPERATING REGISTER: A
+                      96     ; SFR BITS: P0 (LCD DATA PORT D0-D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+                      97      
+007E 1170             98                                             ACALL           GET_READY                          
+                                          ; IS LCD READY?
+0080 F590             99                                             MOV             P1, A                              
+A51 MACRO ASSEMBLER  4X8_KEYPAD_ME                                                        05/05/2015 20:14:44 PAGE     3
+
+                                          ; LATCH COMMAND INTO LCD DATA PORT        
+0082 C2A5            100                                             CLR             P2.5                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0084 C2A6            101                                             CLR                     P2.6                       
+                                                  ; WRITE
+0086 D2B3            102                                             SETB            P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+0088 C2B3            103                                             CLR             P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+008A 22              104                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                     105     
+                     106     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+008B                 107     LCD_DLY:
+008B 7E3B            108                                             MOV             R6,#3BH
+008D                 109     HERE2:
+008D 7FA8            110                                             MOV             R7,#0A8H
+008F                 111     HERE1:
+008F DFFE            112                                             DJNZ            R7,HERE1        
+0091 DEFA            113                                             DJNZ            R6,HERE2
+0093 22              114                                             RET
+                     115     
+                     116     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0094                 117     LCD_SET:
+                     118     ; THIS SUBROUTINE SETS THE MODE OF OPERATION OF THE LCD
+                     119     ; IT CALLS LCD_CMD OSR TO LATCH-IN THE COMMAND
+                     120     ; OPERATING REGISTER: A                                                                 
+0094 7438            121                                             MOV             A, #38H                            
+                                          ; 2 LINES, 5 X 7 MATRIX DISPLAY
+0096 117E            122                                             CALL            LCD_CMD                            
+                                          ; LATCH COMMAND JUST ABOVE INTO THE LCD
+0098 7480            123                                             MOV             A, #80H                            
+                                          ; DISPLAY ON SECOND LINE
+009A 117E            124                                             CALL            LCD_CMD                            
+                                          ; LATCH COMMAND JUST ABOVE INTO THE LCD
+009C 7406            125                                             MOV             A, #06H                            
+                                          ; INCREMENT FROM LEFT TO RIGHT
+009E 117E            126                                             CALL            LCD_CMD                            
+                                          ; LATCH COMMAND JUST ABOVE INTO THE LCD
+00A0 740E            127                                     MOV             A, #0EH                                    
+                                  ; DISPLAY ON, CURSOR BLINKING
+00A2 117E            128                                             CALL            LCD_CMD                            
+                                          ; LATCH COMMAND JUST ABOVE INTO THE LCD
+00A4 7401            129                                     MOV             A, #01H                                    
+                                  ; CLEAR AND RETURN TO HOME
+00A6 117E            130                                             CALL            LCD_CMD                            
+                                          ; LATCH COMMAND JUST ABOVE INTO THE LCD
+00A8 22              131                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                     132     
+                     133     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+00A9                 134     LCD_SHO:
+                     135     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE DATA CHARATER TO BE DISPLAYED ON THE LCD
+                     136     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR DATA TO BE LATCHED-IN
+                     137     ; OPERATING REGISTER: A
+                     138     ; SFR BITS: P0 (LCD DATA PORT D0-D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+00A9 1170            139                                             ACALL           GET_READY                          
+                                          ; IS LCD READY?
+00AB F590            140                                             MOV             P1, A                              
+                                          ; LATCH DATA INTO LCD DATA PORT 
+00AD D2A5            141                                             SETB            P2.5                               
+                                          ; RS=1, ACCESS LCD DATA REG
+00AF C2A6            142                                             CLR                     P2.6                       
+A51 MACRO ASSEMBLER  4X8_KEYPAD_ME                                                        05/05/2015 20:14:44 PAGE     4
+
+                                                  ; R/!W=0, WRITE
+00B1 D2B3            143                                             SETB            P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+00B3 C2B3            144                                             CLR             P3.3                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+00B5 22              145                                             RET
+                     146     
+                     147     ; **********************************************
+0200                 148                                     ORG             200H
+                     149     
+0200 30313233        150     LT_ROW_1:                       DB                      '0','1','2','3','4','5','6','7'    
+                                  ; DATA STORED IN ASCII CODE
+0204 34353637                
+0208 45525455        151     LT_ROW_2:                       DB                      'E','R','T','U','I','O','P','8'
+020C 494F5038                
+0210 41534446        152     LT_ROW_3:                       DB                      'A','S','D','F','H','J','L','9'
+0214 484A4C39                
+0218 5A584356        153     LT_ROW_4:                       DB                      'Z','X','C','V','B','N','M','*'    
+                                  ; '*' IS RESERVED FOR THE FUNCTION 'NEXT'
+021C 424E4D2A                
+                     154     
+                     155                                             END
+A51 MACRO ASSEMBLER  4X8_KEYPAD_ME                                                        05/05/2015 20:14:44 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BACK . . . . . . .  C ADDR   0076H   A   
+GET_READY. . . . .  C ADDR   0070H   A   
+HERE1. . . . . . .  C ADDR   008FH   A   
+HERE2. . . . . . .  C ADDR   008DH   A   
+KEYFNL . . . . . .  C ADDR   006FH   A   
+KEYPAD_ID. . . . .  C ADDR   000CH   A   
+K_ID_1 . . . . . .  C ADDR   0019H   A   
+K_ID_2 . . . . . .  C ADDR   0022H   A   
+K_ID_3 . . . . . .  C ADDR   0056H   A   
+K_ID_4 . . . . . .  C ADDR   005CH   A   
+LCD_CMD. . . . . .  C ADDR   007EH   A   
+LCD_DLY. . . . . .  C ADDR   008BH   A   
+LCD_SET. . . . . .  C ADDR   0094H   A   
+LCD_SHO. . . . . .  C ADDR   00A9H   A   
+LT_ROW_1 . . . . .  C ADDR   0200H   A   
+LT_ROW_2 . . . . .  C ADDR   0208H   A   
+LT_ROW_3 . . . . .  C ADDR   0210H   A   
+LT_ROW_4 . . . . .  C ADDR   0218H   A   
+M1 . . . . . . . .  C ADDR   0008H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+ROW_0. . . . . . .  C ADDR   0044H   A   
+ROW_1. . . . . . .  C ADDR   0049H   A   
+ROW_2. . . . . . .  C ADDR   004EH   A   
+ROW_3. . . . . . .  C ADDR   0053H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

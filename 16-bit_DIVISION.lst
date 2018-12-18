@@ -1,0 +1,92 @@
+A51 MACRO ASSEMBLER  16_BIT_DIVISION                                                      03/06/2015 20:14:17 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\16-bit_DIVISION.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE ..\..\fedy's project\project papers for EMS\EMCS Codes\16-bit_DIVISION.a S
+                      ET(SMALL) DEBUG PRINT(.\16-bit_DIVISION.lst) OBJECT(C:\sbcHex\16-bit_DIVISION.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; A SUBROUTINE THAT PERFORMS 16-BIT DIVISION
+                       2     ; ORIGINAL DATA:                                HOB             LOB
+                       3     ;                                       DIVIDEND        R1              R0      
+                       4     ;                                       DIVISOR         R3              R2
+                       5     
+0000                   6                             ORG             0000H
+0000 802E              7                             SJMP            MAIN
+                       8     
+                       9                     
+0030                  10                             ORG                     30H
+0030 C3               11     MAIN:           CLR                     C
+0031 7C00             12                             MOV                     R4, #00H
+0033 7D00             13                             MOV                     R5, #00H
+0035 75F000           14                             MOV                     B, #00H
+                      15     
+                      16                             ; STEP 1: SHIFT LEFT THE DIVISOR
+0038 05F0             17     DIV_1:          INC                     B
+003A EA               18                             MOV                     A, R2
+003B 33               19                             RLC                     A
+003C FA               20                             MOV                     R2, A
+003D EB               21                             MOV                     A, R3
+003E 33               22                             RLC                     A
+003F FB               23                             MOV                     R3, A
+0040 50F6             24                             JNC                     DIV_1
+                      25     
+                      26                             ; STEP 2: SHIFT RIGHT THE DIVISOR
+0042 EB               27     DIV_2:          MOV                     A, R3
+0043 13               28                             RRC                     A
+0044 FB               29                             MOV                     R3, A
+0045 EA               30                             MOV                     A, R2
+0046 13               31                             RRC                     A
+0047 FA               32                             MOV                     R2, A
+0048 C3               33                             CLR                     C
+0049 8907             34                             MOV                     07H, R1
+004B 8806             35                             MOV                     06H, R0
+004D 9A               36                             SUBB            A, R2
+004E F8               37                             MOV                     R0, A
+004F E9               38                             MOV                     A, R1
+0050 9B               39                             SUBB            A, R3
+0051 F9               40                             MOV                     R1, A
+0052 5004             41                             JNC                     DIV_3
+0054 A907             42                             MOV                     R1, 07H
+0056 A806             43                             MOV                     R0, 06H
+                      44     
+                      45                             ; STEP 3
+0058 B3               46     DIV_3:          CPL                     C
+0059 EC               47                             MOV                     A, R4
+005A 33               48                             RLC                     A
+005B FC               49                             MOV                     R4, A
+005C ED               50                             MOV                     A, R5
+005D 33               51                             RLC                     A
+005E FD               52                             MOV                     R5, A
+005F D5F0E0           53                             DJNZ            B, DIV_2
+                      54     
+                      55                             ; FINAL CLEAN UP
+0062 AB05             56                             MOV                     R3, 05H
+0064 AA04             57                             MOV                     R2, 04H
+A51 MACRO ASSEMBLER  16_BIT_DIVISION                                                      03/06/2015 20:14:17 PAGE     2
+
+                      58     
+                      59     ;                       RET
+                      60     
+                      61                             END
+A51 MACRO ASSEMBLER  16_BIT_DIVISION                                                      03/06/2015 20:14:17 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+DIV_1. . . . . . .  C ADDR   0038H   A   
+DIV_2. . . . . . .  C ADDR   0042H   A   
+DIV_3. . . . . . .  C ADDR   0058H   A   
+MAIN . . . . . . .  C ADDR   0030H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

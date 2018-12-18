@@ -1,0 +1,278 @@
+A51 MACRO ASSEMBLER  KD                                                                   12/24/2014 14:26:25 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\KD.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE C:\PASTOR\KD.a SET(SMALL) DEBUG PRINT(.\KD.lst) OBJECT(C:\sbcHex\KD.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+  00B0                 2             PKEY EQU  P3
+0000 802E              3             JMP   MAIN
+                       4     ;------------------------------
+0030                   5        ORG   30H
+0030                   6     MAIN:
+                       7     ;       CALL   LCD_DLY  
+0030 11B2              8             CALL   LCD_SET
+0032 1200E2            9             LCALL  INTRO_MSG                                        ; CALLS AN OSR TO DISPLAY S
+                             OME MESSAGE IN LINE 1 & 2
+0035                  10     M1:
+0035 1139             11             CALL   KEY
+0037 80FC             12             JMP    M1
+                      13     ;-------------------------- KEY
+0039                  14     KEY:
+0039 75B00F           15             MOV   PKEY,#0FH
+003C E5B0             16             MOV   A,PKEY
+003E 540F             17             ANL   A,#0FH
+0040 B40F02           18             CJNE  A,#0FH,KEY2
+                      19             ;JB P1.0, KEY2
+0043 806C             20             JMP   KEYFNL
+0045                  21     KEY2:   
+0045 11CC             22             CALL  LCD_DLY
+0047 75B00F           23             MOV   PKEY,#0FH
+004A E5B0             24             MOV   A,PKEY
+004C 540F             25             ANL   A,#0FH
+004E B40F02           26             CJNE  A,#0FH,KEY3
+0051 805E             27             JMP   KEYFNL
+0053                  28     KEY3:
+0053 7804             29             MOV   R0,#4
+0055                  30     KEY31:  
+0055 13               31             RRC   A
+0056 5002             32             JNC   KEY4
+0058 D8FB             33             DJNZ  R0,KEY31
+005A                  34     KEY4:
+005A B80405           35             CJNE  R0,#4,KEY41
+005D 900131           36             MOV   DPTR,#ROW_1
+0060 801A             37             JMP   KEY5
+0062                  38     KEY41:  
+0062 B80305           39             CJNE  R0,#3,KEY42
+0065 900134           40             MOV   DPTR,#ROW_2
+0068 8012             41             JMP   KEY5
+006A                  42     KEY42:  
+006A B80205           43             CJNE  R0,#2,KEY43
+006D 900137           44             MOV   DPTR,#ROW_3
+0070 800A             45             JMP   KEY5
+0072                  46     KEY43:  
+0072 B80105           47             CJNE  R0,#1,KEY44
+0075 90013A           48             MOV   DPTR,#ROW_4
+0078 8002             49             JMP   KEY5
+007A                  50     KEY44:
+007A 8035             51             JMP   KEYFNL
+007C                  52     KEY5:
+007C 75B0FF           53             MOV   PKEY,#0FFH                
+007F 75B0F0           54             MOV   PKEY,#0F0H                
+0082 E5B0             55             MOV   A,PKEY
+0084 C4               56             SWAP  A
+                      57     ;KEY6:
+A51 MACRO ASSEMBLER  KD                                                                   12/24/2014 14:26:25 PAGE     2
+
+0085 7803             58             MOV   R0,#3
+0087                  59     KEY61:  
+0087 13               60             RRC   A
+0088 5004             61             JNC   KEY7
+008A D8FB             62             DJNZ  R0,KEY61
+008C 8023             63             JMP   KEYFNL
+                      64     ;-------------------------      
+008E                  65     KEY7:
+008E B80302           66             CJNE  R0,#3,KEY71
+0091 800F             67             JMP   KEY8
+0093                  68     KEY71:  
+0093 B80203           69             CJNE  R0,#2,KEY72
+0096 A3               70             INC   DPTR
+0097 8009             71             JMP   KEY8
+0099                  72     KEY72:  
+0099 B80104           73             CJNE  R0,#1,KEY74
+009C A3               74             INC   DPTR
+009D A3               75             INC   DPTR
+009E 8002             76             JMP   KEY8
+                      77     ;KEY73:                                   ; FOR LONGER COLUMNS U CAN EXPAND THIS FROM HERE
+                      78     ;       CJNE  R0,#1,KEY74
+                      79     ;       INC   DPTR
+                      80     ;       INC   DPTR
+                      81     ;       INC   DPTR      
+                      82     ;       JMP   KEY8
+00A0                  83     KEY74:  
+00A0 800F             84             JMP   KEYFNL
+00A2                  85     KEY8:
+00A2 75B00F           86             MOV   PKEY,#0FH
+00A5 E5B0             87             MOV   A,PKEY
+00A7 540F             88             ANL   A,#0FH
+00A9 B40FF6           89             CJNE  A,#0FH,KEY8
+                      90     
+                      91     ;       JB              00H, JJ
+                      92     ;       MOV             A, #01H
+                      93     ;       CALL    LCD_CMD
+                      94     ;       SETB    00H
+                      95     
+00AC 7400             96             MOV             A, #0
+00AE 93               97             MOVC  A,@A+DPTR
+00AF 11BF             98             CALL  LCD_SHO   
+00B1                  99     KEYFNL:
+00B1 22              100             RET     
+                     101     ;-------------------------------
+00B2                 102     LCD_SET:
+00B2 7438            103             MOV   A,#38H
+00B4 11D5            104             CALL   LCD_CMD
+00B6 740C            105             MOV   A,#0CH
+00B8 11D5            106             CALL   LCD_CMD
+00BA 7406            107             MOV   A,#06H
+00BC 11D5            108             CALL   LCD_CMD
+00BE 22              109             RET
+                     110     ;--------------------------------       
+00BF                 111     LCD_SHO:
+                     112     ;       MOV   A,R7
+                     113     ;       ORL   A,#30H
+00BF 3123            114             CALL  GET_READY
+00C1 F5A0            115             MOV   P2,A
+00C3 D290            116             SETB   P1.0
+00C5 C291            117             CLR   P1.1
+00C7 D292            118             SETB   P1.2
+00C9 C292            119             CLR   P1.2
+                     120     ;       CALL   LCD_DLY
+00CB 22              121             RET
+                     122     ;--------------------------------
+00CC                 123     LCD_DLY:
+A51 MACRO ASSEMBLER  KD                                                                   12/24/2014 14:26:25 PAGE     3
+
+00CC 7E32            124             MOV   R6,#50
+00CE                 125     HERE2:
+00CE 7F32            126             MOV   R7,#50
+00D0                 127     HERE1:
+00D0 DFFE            128             DJNZ   R7,HERE1 
+00D2 DEFA            129             DJNZ   R6,HERE2
+00D4 22              130             RET
+                     131     ;-------------------------------
+00D5                 132     LCD_CMD:
+00D5 3123            133             CALL  GET_READY
+00D7 F5A0            134             MOV   P2,A
+00D9 C290            135             CLR   P1.0
+00DB C291            136             CLR   P1.1
+00DD D292            137             SETB   P1.2
+00DF C292            138             CLR   P1.2
+                     139     ;       CALL   LCD_DLY
+00E1 22              140             RET
+                     141     ;-------------------------------
+00E2                 142     INTRO_MSG:
+                     143     ;
+                     144     ;
+                     145     ;                                       MOV                     A, #80H                    
+                                                  ; THIS INSTRUCTION MY NOT BE RELEVANT SINCE THIS MESSAGE IS CALLED IMMEDIATELY AFTER 
+                     146     ;                                       LCALL           LCD_CMD
+00E2 12010E          147                                     LCALL           DISP_CHAR
+00E5 50726573        148                                             DB                      'Press 0 for MHEX',0       
+                                  ; LINE 1
+00E9 73203020                
+00ED 666F7220                
+00F1 4D484558                
+00F5 00                      
+00F6 74C0            149                                             MOV                     A, #0C0H                   
+                                                  ; SET DDRAM ADDRESS TO LINE 2
+00F8 11D5            150                                             CALL            LCD_CMD                           
+00FA 12010E          151                                     LCALL           DISP_CHAR
+00FD 50726573        152                                             DB                      'Press 1 for ASM',0        
+                                      ; LINE 2
+0101 73203120                
+0105 666F7220                
+0109 41534D00                
+010D 22              153                                             RET
+                     154     ;-------------------------------
+010E                 155     DISP_CHAR:
+010E D083            156                                     POP             DPH
+0110 D082            157                                     POP             DPL
+0112                 158     PRINT_TEXT:
+0112 E4              159                                     CLR             A
+0113 93              160                                     MOVC            A, @A+DPTR
+0114 B40002          161                                     CJNE            A, #00H, LOOP
+0117 8007            162                                     SJMP            RETURN
+0119 1200BF          163     LOOP:                           LCALL           LCD_SHO
+011C A3              164                                     INC             DPTR
+011D 020112          165                                     LJMP            PRINT_TEXT
+0120 7401            166     RETURN:                         MOV             A, #01H
+0122 73              167                                     JMP             @A+DPTR
+                     168     
+                     169     ;--------------------------------       
+0123                 170     GET_READY:
+                     171     ; THIS SUBROUTINE CHECKS BUSY FLAG (P0.7=D7) TO ENABLE COMMAND OR DATA LATCH-IN
+                     172     ; SFR BITS: P0.7 (D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+0123 D2A7            173                                             SETB            P2.7                               
+                                          ; MAKE P1.7 INPUT PORT
+0125 C290            174                                             CLR             P1.0                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0127 D291            175                                             SETB            P1.1                               
+                                          ; R/W=1 READ COMMAND REG
+A51 MACRO ASSEMBLER  KD                                                                   12/24/2014 14:26:25 PAGE     4
+
+                     176                                                                                                
+                                                          ; READ COMMAND REG AND CHECK BUSY FLAG
+0129                 177     BACK:   
+0129 C292            178                                             CLR             P1.2                               
+                                          ; E=0 L-TO-H PULSE
+012B D292            179                                             SETB            P1.2                               
+                                          ; E=1 FOR L-TO-H PULSE
+012D 20A7F9          180                                             JB                      P2.7, BACK                 
+                                                  ; STAY UNTIL BUSY FLAG=0
+0130 22              181                                             RET     
+                     182     ;--------------------------------       
+0131 313233          183     ROW_1: DB '1','2','3'
+0134 343536          184     ROW_2: DB '4','5','6'
+0137 373839          185     ROW_3: DB '7','8','9'
+013A 2A3023          186     ROW_4: DB '*','0','#'           
+                     187      END
+                              ; TESTED: QC passed snytaxically and semantically correct
+A51 MACRO ASSEMBLER  KD                                                                   12/24/2014 14:26:25 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BACK . . . . . . .  C ADDR   0129H   A   
+DISP_CHAR. . . . .  C ADDR   010EH   A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+GET_READY. . . . .  C ADDR   0123H   A   
+HERE1. . . . . . .  C ADDR   00D0H   A   
+HERE2. . . . . . .  C ADDR   00CEH   A   
+INTRO_MSG. . . . .  C ADDR   00E2H   A   
+KEY. . . . . . . .  C ADDR   0039H   A   
+KEY2 . . . . . . .  C ADDR   0045H   A   
+KEY3 . . . . . . .  C ADDR   0053H   A   
+KEY31. . . . . . .  C ADDR   0055H   A   
+KEY4 . . . . . . .  C ADDR   005AH   A   
+KEY41. . . . . . .  C ADDR   0062H   A   
+KEY42. . . . . . .  C ADDR   006AH   A   
+KEY43. . . . . . .  C ADDR   0072H   A   
+KEY44. . . . . . .  C ADDR   007AH   A   
+KEY5 . . . . . . .  C ADDR   007CH   A   
+KEY61. . . . . . .  C ADDR   0087H   A   
+KEY7 . . . . . . .  C ADDR   008EH   A   
+KEY71. . . . . . .  C ADDR   0093H   A   
+KEY72. . . . . . .  C ADDR   0099H   A   
+KEY74. . . . . . .  C ADDR   00A0H   A   
+KEY8 . . . . . . .  C ADDR   00A2H   A   
+KEYFNL . . . . . .  C ADDR   00B1H   A   
+LCD_CMD. . . . . .  C ADDR   00D5H   A   
+LCD_DLY. . . . . .  C ADDR   00CCH   A   
+LCD_SET. . . . . .  C ADDR   00B2H   A   
+LCD_SHO. . . . . .  C ADDR   00BFH   A   
+LOOP . . . . . . .  C ADDR   0119H   A   
+M1 . . . . . . . .  C ADDR   0035H   A   
+MAIN . . . . . . .  C ADDR   0030H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PKEY . . . . . . .  D ADDR   00B0H   A   
+PRINT_TEXT . . . .  C ADDR   0112H   A   
+RETURN . . . . . .  C ADDR   0120H   A   
+ROW_1. . . . . . .  C ADDR   0131H   A   
+ROW_2. . . . . . .  C ADDR   0134H   A   
+ROW_3. . . . . . .  C ADDR   0137H   A   
+ROW_4. . . . . . .  C ADDR   013AH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

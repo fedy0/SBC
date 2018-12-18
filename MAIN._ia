@@ -1,0 +1,1 @@
+"..\June_21\MAIN.a" SET (SMALL) DEBUG PRINT(..\SBC-85uP\MAIN.lst) OBJECT(..\SBC-85uP\SBCHex\MAIN.obj) EP

@@ -1,0 +1,300 @@
+A51 MACRO ASSEMBLER  PIG                                                                  12/30/2014 23:36:55 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\pig.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE pig.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\pig.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;keyboard subroutine. This program sends the ASCII
+                       2     ;code for pressed key to P0.1
+                       3     ;P1.0-P1.3 connected to rows, P2.0-P2.3 to column
+                       4     
+                       5     ;MAIN:
+                       6     ;                               CALL    LCD_SET
+                       7     ;                               LCALL  INTRO_MSG                        ; CALLS AN OSR TO D
+                             ISPLAY SOME MESSAGE IN LINE 1 & 2
+                       8     
+0000 75A0FF            9                                     MOV P2,#0FFH                            ;make P2 an input p
+                             ort
+0003 759000           10     K1:                     MOV P1,#0                                       ;ground all rows at
+                              once
+0006 E5A0             11                                     MOV A,P2                                        ;read all c
+                             ol
+                      12                                                                                             ;(e
+                             nsure keys open)
+0008 550F             13                                     ANL A,00001111B                         ;masked unused bits
+000A B40FF6           14                                     CJNE A,#00001111B,K1            ;till all keys release
+000D 7110             15     K2:                     ACALL DELAY                             ;call 20 msec delay
+000F E5A0             16                                     MOV A,P2                                        ;see if any
+                              key is pressed
+0011 550F             17                                     ANL A,00001111B                         ;mask unused bits
+0013 B40F02           18                                     CJNE A,#00001111B,OVER          ;key pressed, find row
+0016 80F5             19                                     SJMP K2                                         ;check till
+                              key pressed
+0018 7110             20     OVER:                   ACALL DELAY                             ;wait 20 msec debounce time
+001A E5A0             21                                     MOV A,P2                                        ;check key 
+                             closure
+001C 550F             22                                     ANL A,00001111B                         ;mask unused bits
+001E B40F02           23                                     CJNE A,#00001111B,OVER1         ;key pressed, find row
+0021 80EA             24                                     SJMP K2                                         ;if none, k
+                             eep polling
+0023 7590FE           25     OVER1:                  MOV P1, #11111110B                      ;ground row 0
+0026 E5A0             26                                     MOV A,P2                                        ;read all c
+                             olumns
+0028 540F             27                                     ANL A,#00001111B                        ;mask unused bits
+002A B40F21           28                                     CJNE A,#00001111B,ROW_0         ;key row 0, find col.
+002D 7590FD           29                                     MOV P1,#11111101B                       ;ground row 1
+0030 E5A0             30                                     MOV A,P2                                        ;read all c
+                             olumns
+0032 540F             31                                     ANL A,#00001111B                        ;mask unused bits
+0034 B40F1C           32                                     CJNE A,#00001111B,ROW_1         ;key row 1, find col.
+0037 7590FB           33                                     MOV P1,#11111011B                       ;ground row 2
+003A E5A0             34                                     MOV A,P2                                        ;read all c
+                             olumns
+003C 540F             35                                     ANL A,#00001111B                        ;mask unused bits
+003E B40F17           36                                     CJNE A,#00001111B,ROW_2         ;key row 2, find col.
+0041 7590F7           37                                     MOV P1,#11110111B                       ;ground row 3
+0044 E5A0             38                                     MOV A,P2                                        ;read all c
+                             olumns
+0046 540F             39                                     ANL A,#00001111B                        ;mask unused bits
+0048 B40F12           40                                     CJNE A,#00001111B,ROW_3         ;key row 3, find col.
+004B 02000D           41                                     LJMP K2                                         ;if none, f
+                             alse input,
+                      42                                                                                             ;re
+                             peat
+004E 900300           43     ROW_0:                  MOV DPTR,#KCODE0                        ;set DPTR=start of row 0
+A51 MACRO ASSEMBLER  PIG                                                                  12/30/2014 23:36:55 PAGE     2
+
+0051 800D             44                                     SJMP FIND                                       ;find col. 
+                             Key belongs to
+0053 900304           45     ROW_1:                  MOV DPTR,#KCODE1                        ;set DPTR=start of row
+0056 8008             46                                     SJMP FIND                                       ;find col. 
+                             Key belongs to
+0058 900308           47     ROW_2:                  MOV DPTR,#KCODE2                        ;set DPTR=start of row 2
+005B 8003             48                                     SJMP FIND                                       ;find col. 
+                             Key belongs to
+005D 90030C           49     ROW_3:                  MOV DPTR,#KCODE3                        ;set DPTR=start of row 3
+0060 13               50     FIND:                   RRC A                                           ;see if any CY bit 
+                             low
+0061 5003             51                                     JNC MATCH                                       ;if zero, g
+                             et ASCII code
+0063 A3               52                                     INC DPTR                                        ;point to n
+                             ext col. addr
+0064 80FA             53                                     SJMP FIND                                       ;keep searc
+                             hing
+                      54     
+0066 7401             55     MATCH:                  MOV A, #01H
+0068 712A             56                                     CALL    LCD_CMD
+006A E4               57                                     CLR A                                           ;set A=0 (m
+                             atch is found)
+006B 93               58                                     MOVC A,@A+DPTR                          ;get ASCII from tab
+                             le
+006C 7401             59                                     MOV A, #01H
+006E 712A             60                                     CALL    LCD_CMD
+0070 F580             61                                     MOV P0,A                                        ;display pr
+                             essed key
+0072 7144             62                                     CALL LCD_SHO
+0074 020003           63                                     LJMP K1
+                      64     
+                      65     ;ASCII LOOK-UP TABLE FOR EACH ROW
+0300                  66                                     ORG 300H
+0300 30313233         67     KCODE0:                 DB '0','1','2','3'                                                 
+                                  ;ROW 0
+0304 34353637         68     KCODE1:                 DB '4','5','6','7'                                                 
+                                  ;ROW 1
+0308 38394142         69     KCODE2:                 DB '8','9','A','B'                                                 
+                                  ;ROW 2
+030C 43444546         70     KCODE3:                 DB 'C','D','E','F'                                                 
+                                  ;ROW 3
+                      71     
+                      72     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+0310                  73     DELAY:
+0310 753B3B           74                                     MOV             3BH, #3BH                                  
+                                  ; MOVE #0FFH INTO MEM LOCATIONS (3BH & 3CH) THAT SERVE AS COUNTER FOR THIS PARTICULAR
+0313 753CA8           75     DLY_1:                  MOV             3CH, #0A8H                                      ; D
+                             ELAY SUBROUTINE
+0316 D53CFD           76                                     DJNZ    3CH, $                                          ; S
+                             TAY HERE TILL THE CONTENT OF THE MEMORY LOCATION (3CH) IS ZERO
+0319 D53BF7           77                                     DJNZ    3BH, DLY_1                                      ; S
+                             TAY HERE TILL THE CONTENT OF THE MEMORY LOCATION (3BH) IS ZERO
+                      78     
+                      79     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+031C                  80     GET_READY:
+                      81     ; THIS SUBROUTINE CHECKS BUSY FLAG (P0.7=D7) TO ENABLE COMMAND OR DATA LATCH-IN
+                      82     ; SFR BITS: P0.7 (D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+031C D287             83                                             SETB            P0.7                               
+                                          ; MAKE P0.7 INPUT PORT
+031E C2B0             84                                             CLR             P3.0                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0320 D2B1             85                                             SETB            P3.1                               
+                                          ; R/W=1 READ COMMAND REG
+                      86                                                                                                
+A51 MACRO ASSEMBLER  PIG                                                                  12/30/2014 23:36:55 PAGE     3
+
+                                                          ; READ COMMAND REG AND CHECK BUSY FLAG
+0322                  87     BACK:   
+0322 C2B2             88                                             CLR             P3.2                               
+                                          ; E=0 L-TO-H PULSE
+0324 D2B2             89                                             SETB            P3.2                               
+                                          ; E=1 FOR L-TO-H PULSE
+0326 2087F9           90                                             JB                      P0.7, BACK                 
+                                                  ; STAY UNTIL BUSY FLAG=0
+0329 22               91                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                      92     
+                      93     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------
+032A                  94     LCD_CMD:
+                      95     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE COMMAND CHARATER TO BE DISPLAYED ON THE LCD
+                      96     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR COMMAND TO BE LATCHED-IN
+                      97     ; OPERATING REGISTER: A
+                      98     ; SFR BITS: P0 (LCD DATA PORT D0-D7), P2.5 (RS), P2.6 (R/!W), P3.3 (EN)
+                      99      
+032A 711C            100                                             ACALL           GET_READY                          
+                                          ; IS LCD READY?
+032C F580            101                                             MOV             P0, A                              
+                                          ; LATCH COMMAND INTO LCD DATA PORT        
+032E C2B0            102                                             CLR             P3.0                               
+                                          ; RS=0 ACCESS LCD COMMAND REG
+0330 C2B1            103                                             CLR                     P3.1                       
+                                                  ; WRITE
+0332 D2B2            104                                             SETB            P3.2                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+0334 C2B2            105                                             CLR             P3.2                               
+                                          ; H-TO-L PULSE TO LATCH-IN
+0336 22              106                                             RET                                                
+                                                          ; RETURN TO THE CALLER PROGRAM
+                     107                             
+                     108     ; ----------------------------------------------------------------
+0337                 109     LCD_SET:
+                     110     ; THIS SUBROUTINE SETS THE MODE OF OPERATION OF THE LCD
+                     111     ; IT CALLS LCD_CMD OSR TO LATCH-IN THE COMMAND
+                     112     ; OPERATING REGISTER: A
+0337 7438            113                                     MOV     A,#38H                                  ; 5 X 7 MAT
+                             RIX DISPLAY
+0339 712A            114                                     CALL    LCD_CMD                                 ; LATCH COM
+                             MAND JUST ABOVE INTO THE LCD
+033B 740C            115                                     MOV     A,#0CH                                  ; DISPLAY O
+                             N FIRST LINE
+033D 712A            116                                     CALL    LCD_CMD                                 ; LATCH COM
+                             MAND JUST ABOVE INTO THE LCD
+033F 7406            117                                     MOV     A,#06H                                  ; INCREMENT
+                              FROM LEFT TO RIGHT
+0341 712A            118                                     CALL    LCD_CMD                                 ; LATCH COM
+                             MAND JUST ABOVE INTO THE LCD
+0343 22              119                                     RET                                                        
+                                  ; RETURN TO THE CALLER PROGRAM
+                     120     
+                     121     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------       
+0344                 122     LCD_SHO:
+                     123     ; THIS SUBROUTINE SENDS THE ASCII CODE FOR THE DATA CHARATER TO BE DISPLAYED ON THE LCD
+                     124     ; IT CALLS READY (OSR) TO CHECK BUSY FLAG FOR DATA TO BE LATCHED-IN
+                     125     ; OPERATING REGISTER: A
+                     126     ; SFR BITS: P2 (LCD DATA PORT D0-D7), P3.0 (RS), P3.1 (R/!W), P3.5 (EN)
+0344 711C            127                                     ACALL   GET_READY                               ; IS LCD RE
+                             ADY?
+0346 F580            128                                     MOV     P0, A                                   ; LATCH DAT
+                             A INTO LCD DATA PORT
+0348 D2B0            129                                     SETB    P3.0                                    ; RS=1, ACC
+A51 MACRO ASSEMBLER  PIG                                                                  12/30/2014 23:36:55 PAGE     4
+
+                             ESS LCD DATA REG
+034A C2B1            130                                     CLR             P3.1                                    ; R
+                             /!W=0, WRITE
+034C D2B2            131                                     SETB    P3.2                                    ; H-TO-L PU
+                             LSE TO LATCH-IN
+034E C2B2            132                                     CLR     P3.2                                    ; H-TO-L PU
+                             LSE TO LATCH-IN
+0350 22              133                                     RET
+                     134     ; -----------------------------------------------------------------------------------------
+                             ----------------------------------------------       
+0351                 135     INTRO_MSG:
+                     136     ;
+                     137     ;
+                     138     ;                                       MOV                     A, #80H                    
+                                                  ; THIS INSTRUCTION MY NOT BE RELEVANT SINCE THIS MESSAGE IS CALLED IMMEDIATELY AFTER 
+                     139     ;                                       LCALL           LCD_CMD
+0351 12037D          140                                     LCALL           DISP_CHAR
+0354 50726573        141                                             DB                      'Press 0 for MHEX',0       
+                                  ; LINE 1
+0358 73203020                
+035C 666F7220                
+0360 4D484558                
+0364 00                      
+0365 74C0            142                                             MOV                     A, #0C0H                   
+                                                  ; SET DDRAM ADDRESS TO LINE 2
+0367 712A            143                                             CALL            LCD_CMD                           
+0369 12037D          144                                     LCALL           DISP_CHAR
+036C 50726573        145                                             DB                      'Press 1 for ASM',0        
+                                      ; LINE 2
+0370 73203120                
+0374 666F7220                
+0378 41534D00                
+037C 22              146                                             RET
+                     147     ;-------------------------------
+037D                 148     DISP_CHAR:
+037D D083            149                                     POP             DPH
+037F D082            150                                     POP             DPL
+0381                 151     PRINT_TEXT:
+0381 E4              152                                     CLR             A
+0382 93              153                                     MOVC            A, @A+DPTR
+0383 B40002          154                                     CJNE            A, #00H, LOOP
+0386 8007            155                                     SJMP            RETURN
+0388 120344          156     LOOP:                           LCALL           LCD_SHO
+038B A3              157                                     INC             DPTR
+038C 020381          158                                     LJMP            PRINT_TEXT
+038F 7401            159     RETURN:                         MOV             A, #01H
+0391 73              160                                     JMP             @A+DPTR
+                     161     
+                     162                                     END
+A51 MACRO ASSEMBLER  PIG                                                                  12/30/2014 23:36:55 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BACK . . . . . . .  C ADDR   0322H   A   
+DELAY. . . . . . .  C ADDR   0310H   A   
+DISP_CHAR. . . . .  C ADDR   037DH   A   
+DLY_1. . . . . . .  C ADDR   0313H   A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+FIND . . . . . . .  C ADDR   0060H   A   
+GET_READY. . . . .  C ADDR   031CH   A   
+INTRO_MSG. . . . .  C ADDR   0351H   A   
+K1 . . . . . . . .  C ADDR   0003H   A   
+K2 . . . . . . . .  C ADDR   000DH   A   
+KCODE0 . . . . . .  C ADDR   0300H   A   
+KCODE1 . . . . . .  C ADDR   0304H   A   
+KCODE2 . . . . . .  C ADDR   0308H   A   
+KCODE3 . . . . . .  C ADDR   030CH   A   
+LCD_CMD. . . . . .  C ADDR   032AH   A   
+LCD_SET. . . . . .  C ADDR   0337H   A   
+LCD_SHO. . . . . .  C ADDR   0344H   A   
+LOOP . . . . . . .  C ADDR   0388H   A   
+MATCH. . . . . . .  C ADDR   0066H   A   
+OVER . . . . . . .  C ADDR   0018H   A   
+OVER1. . . . . . .  C ADDR   0023H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PRINT_TEXT . . . .  C ADDR   0381H   A   
+RETURN . . . . . .  C ADDR   038FH   A   
+ROW_0. . . . . . .  C ADDR   004EH   A   
+ROW_1. . . . . . .  C ADDR   0053H   A   
+ROW_2. . . . . . .  C ADDR   0058H   A   
+ROW_3. . . . . . .  C ADDR   005DH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

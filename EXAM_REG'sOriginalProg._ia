@@ -1,0 +1,1 @@
+"..\SBC-85uP\EXAM_REG'sOriginalProg.a" SET (SMALL) DEBUG PRINT(.\EXAM_REG'sOriginalProg.lst) OBJECT(..\SBC-85uP\SBCHex\EXAM_REG'sOriginalProg.obj) EP

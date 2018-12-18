@@ -1,0 +1,78 @@
+A51 MACRO ASSEMBLER  DELAYS                                                               02/11/2015 16:22:42 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\DELAYS.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE DELAYS.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\DELAYS.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS SUBROUTINE CONTAINS CODES FOR DIFFERENT TIME DELAYS
+                       2     
+                       3     ; 20mS DELAY  FOR DEBOUNCING
+0000                   4                                     ORG             0000H
+0000                   5     DELAY_20mS:
+0000 753B3B            6                                     MOV             3BH, #3BH                               ; M
+                             OVE #0FFH INTO MEM LOCATIONS (3BH & 3CH) THAT SERVE AS COUNTER FOR THIS PARTICULAR
+0003 753CA8            7     DLY_20mS_1:             MOV             3CH, #0A8H                              ; DELAY SUB
+                             ROUTINE
+0006 D53CFD            8                                     DJNZ    3CH, $                                  ; STAY HERE
+                              TILL THE CONTENT OF THE MEMORY LOCATION (3CH) IS ZERO
+0009 D53BF7            9                                     DJNZ    3BH, DLY_20mS_1                 ; STAY HERE TILL TH
+                             E CONTENT OF THE MEMORY LOCATION (3BH) IS ZERO
+                      10     
+000C 22               11                                     RET
+                      12     
+                      13     
+                      14     
+                      15     
+                      16     
+                      17     
+                      18     
+                      19     
+                      20     
+                      21     
+                      22     
+                      23     
+                      24     
+                      25     
+                      26     
+                      27     
+                      28     
+                      29     
+                      30     
+                      31     
+                      32     
+                      33     
+                      34     
+                      35     
+                      36     
+                      37     
+                      38     
+                      39     
+                      40     
+                      41     
+                      42     
+                      43     
+                      44     
+                      45     
+                      46     
+                      47     
+                      48     
+                      49                                     END
+A51 MACRO ASSEMBLER  DELAYS                                                               02/11/2015 16:22:42 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+DELAY_20MS . . . .  C ADDR   0000H   A   
+DLY_20MS_1 . . . .  C ADDR   0003H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

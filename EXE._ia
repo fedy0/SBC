@@ -1,0 +1,1 @@
+"..\SBC-85uP\EXE.a" SET (SMALL) DEBUG PRINT(.\EXE.lst) OBJECT(..\SBC-85uP\SBCHex\EXE.obj) EP

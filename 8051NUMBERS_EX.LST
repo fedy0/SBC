@@ -1,0 +1,123 @@
+A51 MACRO ASSEMBLER  8051NUMBERS_EX                                                       01/17/2015 22:09:07 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8051NUMBERS_EX.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8051NUMBERS_EX.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\8051NUMBERS_EX.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000 B43002            1     ___8051NUMBERS_EX:                      CJNE            A, #'0', ___8051NUMBER_1_EX
+                       2     
+0003 8049              3                                                             SJMP            ___8051NUMBER_10_EX
+                       4     
+0005 B43102            5     ___8051NUMBER_1_EX:                     CJNE            A, #'1', ___8051NUMBER_2_EX
+                       6     
+0008 8044              7                                                             SJMP            ___8051NUMBER_10_EX
+                       8                                     
+000A B43202            9     ___8051NUMBER_2_EX:                     CJNE            A, #'2', ___8051NUMBER_3_EX        
+                                                  
+                      10     
+000D 803F             11                                                             SJMP            ___8051NUMBER_10_EX
+                      12     
+000F B43302           13     ___8051NUMBER_3_EX:                     CJNE            A, #'3', ___8051NUMBER_4_EX        
+                                                  
+                      14     
+0012 803A             15                                                             SJMP            ___8051NUMBER_10_EX
+                      16     
+0014 B43402           17     ___8051NUMBER_4_EX:                     CJNE            A, #'4', ___8051NUMBER_5_EX        
+                                                  
+                      18     
+0017 8035             19                                                             SJMP            ___8051NUMBER_10_EX
+                      20     
+0019 B43502           21     ___8051NUMBER_5_EX:                     CJNE            A, #'5', ___8051NUMBER_6_EX        
+                                                  
+                      22     
+001C 8030             23                                                             SJMP            ___8051NUMBER_10_EX
+                      24     
+001E B43602           25     ___8051NUMBER_6_EX:                     CJNE            A, #'6', ___8051NUMBER_7_EX        
+                                                  
+                      26     
+0021 802B             27                                                             SJMP            ___8051NUMBER_10_EX
+                      28     
+0023 B43702           29     ___8051NUMBER_7_EX:                     CJNE            A, #'7', ___8051NUMBER_8_EX        
+                                                  
+                      30     
+0026 8026             31                                                             SJMP            ___8051NUMBER_10_EX
+                      32     
+0028 B43802           33     ___8051NUMBER_8_EX:                     CJNE            A, #'8', ___8051NUMBER_9_EX
+                      34     
+002B 8021             35                                                             SJMP            ___8051NUMBER_10_EX
+                      36                                     
+002D B43902           37     ___8051NUMBER_9_EX:                     CJNE            A, #'9', ___8051NUMBER_A_EX        
+                                                  
+                      38     
+0030 801C             39                                                             SJMP            ___8051NUMBER_10_EX
+                      40     
+0032 B44102           41     ___8051NUMBER_A_EX:                     CJNE            A, #'A', ___8051NUMBER_B_EX        
+                                                  
+                      42     
+0035 8017             43                                                             SJMP            ___8051NUMBER_10_EX
+                      44                                     
+0037 B44202           45     ___8051NUMBER_B_EX:                     CJNE            A, #'B', ___8051NUMBER_C_EX        
+                                                  
+                      46     
+003A 8012             47                                                             SJMP            ___8051NUMBER_10_EX
+                      48     
+003C B44302           49     ___8051NUMBER_C_EX:                     CJNE            A, #'C', ___8051NUMBER_D_EX        
+A51 MACRO ASSEMBLER  8051NUMBERS_EX                                                       01/17/2015 22:09:07 PAGE     2
+
+                                                  
+                      50     
+003F 800D             51                                                             SJMP            ___8051NUMBER_10_EX
+                      52     
+0041 B44402           53     ___8051NUMBER_D_EX:                     CJNE            A, #'D', ___8051NUMBER_E_EX        
+                                                  
+                      54     
+0044 8008             55                                                             SJMP            ___8051NUMBER_10_EX
+                      56     
+0046 B44502           57     ___8051NUMBER_E_EX:                     CJNE            A, #'E', ___8051NUMBER_F_EX        
+                                                  
+                      58     
+0049 8003             59                                                             SJMP            ___8051NUMBER_10_EX
+                      60     
+004B B44602           61     ___8051NUMBER_F_EX:                     CJNE            A, #'F', ___8051NUMBERS_EX_EXIT
+                      62                                     
+004E D20F             63     ___8051NUMBER_10_EX:            SETB            0FH                                        
+                                          ; IF BIT ADDR 0FH = 1 THE KEY PRESSED IS A VALID NUMBER ELSE 0FH = 0
+                      64     
+0050                  65     ___8051NUMBERS_EX_EXIT:
+0050 22               66                                                             RET
+*** WARNING #A41 IN 66 (8051NUMBERS_EX.a, LINE 66): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  8051NUMBERS_EX                                                       01/17/2015 22:09:07 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                 T Y P E  V A L U E   ATTRIBUTES
+
+___8051NUMBERS_EX. . .  C ADDR   0000H   A   
+___8051NUMBERS_EX_EXIT  C ADDR   0050H   A   
+___8051NUMBER_10_EX. .  C ADDR   004EH   A   
+___8051NUMBER_1_EX . .  C ADDR   0005H   A   
+___8051NUMBER_2_EX . .  C ADDR   000AH   A   
+___8051NUMBER_3_EX . .  C ADDR   000FH   A   
+___8051NUMBER_4_EX . .  C ADDR   0014H   A   
+___8051NUMBER_5_EX . .  C ADDR   0019H   A   
+___8051NUMBER_6_EX . .  C ADDR   001EH   A   
+___8051NUMBER_7_EX . .  C ADDR   0023H   A   
+___8051NUMBER_8_EX . .  C ADDR   0028H   A   
+___8051NUMBER_9_EX . .  C ADDR   002DH   A   
+___8051NUMBER_A_EX . .  C ADDR   0032H   A   
+___8051NUMBER_B_EX . .  C ADDR   0037H   A   
+___8051NUMBER_C_EX . .  C ADDR   003CH   A   
+___8051NUMBER_D_EX . .  C ADDR   0041H   A   
+___8051NUMBER_E_EX . .  C ADDR   0046H   A   
+___8051NUMBER_F_EX . .  C ADDR   004BH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,304 @@
+A51 MACRO ASSEMBLER  8051NUMBERS_LATCHED_IN                                               01/17/2015 22:14:17 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\8051NUMBERS_LATCHED_IN.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 8051NUMBERS_LATCHED_IN.a SET(SMALL) DEBUG OBJECT(C:\sbcHex\8051NUMBERS_LAT
+                      CHED_IN.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; THIS SR IS USED TO DETECT THE PARTICULAR NUMBER PRESSED
+                       2     ; BY THE USER WHEN QUEING IN DATA IN TO THE SYSTEM
+                       3     ; FLAG USED: 0FH, 10H, 11H, 12H, 13H, 01H, 03H, 0EH     , 14H, 15H, 16H, 17H
+                       4     ; MEM USED:     51H, 33H, 34H, 35H, 53H, 54H, 55H
+                       5     
+                       6     
+                       7     ; FOR OPCODE XX   AND   OPCODE A, #XX
+0000 2020E9            8     ___8051NUMBERS_LATCHED_IN:      JB                      20H, ___8051NUMBERS_EXIT_       ; I
+                             T HELPS TO LATCH-IN CODES FROM OTHER SRs TO THE EXT. MEM
+*** ______________________________________________________________________________________^
+*** ERROR #A51 IN 8 (8051NUMBERS_LATCHED_IN.a, LINE 8): TARGET OUT OF RANGE
+0003 2016E6            9                                                             JB                      16H, ___8051NUMBERS_EXIT_       ; THE LABEL & FLAG FOR PURE OPCODE (FLAG CLEARED IN 8051Rn SR)
+*** ______________________________________________________________________________________________________________^
+*** ERROR #A51 IN 9 (8051NUMBERS_LATCHED_IN.a, LINE 9): TARGET OUT OF RANGE
+0006 201557           10                                                             JB                      15H, ___8051_N1_1_                      ; THE LABEL & FLAG FOR OPERAND OF THE TYPE '@Ri' NOTED
+0009 30141E           11                                                             JNB                     14H, ___SKIP_END                        ; THE LABEL & FLAG FOR OPERAND OF THE TYPE ..., #XX NOTED
+000C                  12     ___START_SKIP:                          CALL            KEYPAD_ID
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 12 (8051NUMBERS_LATCHED_IN.a, LINE 12): UNDEFINED SYMBOL (PASS-2)
+000F 3001FA           13                                                             JNB                     01H, ___START_SKIP
+0012 C201             14                                                             CLR                     01H
+0014                  15                                                             CALL            ___8051NUMBERS_EX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 15 (8051NUMBERS_LATCHED_IN.a, LINE 15): UNDEFINED SYMBOL (PASS-2)
+0017 300FF2           16                                                             JNB                     0FH, ___START_SKIP
+001A C20F             17                                                             CLR                     0FH                
+001C                  18                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 18 (8051NUMBERS_LATCHED_IN.a, LINE 18): UNDEFINED SYMBOL (PASS-2)
+001F                  19                                                             CALL            ASCII_2_HEX 
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 19 (8051NUMBERS_LATCHED_IN.a, LINE 19): UNDEFINED SYMBOL (PASS-2)
+0022 D550E7           20                                                             DJNZ            50H, ___START_SKIP 
+0025 853435           21                                                             MOV                     35H, 34H                                        ; SAVE THE 2ND BYTE OF INSTRUCTION
+0028 01EC             22                                                             AJMP            ___8051NUMBERS_EXIT_            ; JUMP TO INSTRUTION TAHT LATCH-IN THE USER'S DATA INPUT
+                      23     
+002A                  24     ___SKIP_END:                            CALL            ___8051NUMBERS_EX
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 24 (8051NUMBERS_LATCHED_IN.a, LINE 24): UNDEFINED SYMBOL (PASS-2)
+002D 300FF2           25                                                             JNB                     0FH, ___8051NUMBERS_EXIT        ; JUMP IF NOT A HEX NUMBER
+*** ______________________________________________________________________________________________________________^
+*** ERROR #A51 IN 25 (8051NUMBERS_LATCHED_IN.a, LINE 25): TARGET OUT OF RANGE
+                      26     
+0030                  27                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 27 (8051NUMBERS_LATCHED_IN.a, LINE 27): UNDEFINED SYMBOL (PASS-2)
+                      28     
+0033                  29                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 29 (8051NUMBERS_LATCHED_IN.a, LINE 29): UNDEFINED SYMBOL (PASS-2)
+                      30     
+0036 B210             31                                                             CPL                     10H
+0038 2010E7           32                                                             JB                      10H, ___8051NUMBERS_EXIT
+*** ______________________________________________________________________________________________________________^
+*** ERROR #A51 IN 32 (8051NUMBERS_LATCHED_IN.a, LINE 32): TARGET OUT OF RANGE
+                      33     
+003B 853435           34                                                             MOV                     35H, 34H                                        ; SAVE THE HIGH ORDER BYTE
+A51 MACRO ASSEMBLER  8051NUMBERS_LATCHED_IN                                               01/17/2015 22:14:17 PAGE     2
+
+003E 755102           35                                                             MOV                     51H, #02H                                       ; LOAD 2 FOR THE REMANING TWO NIBBLE/FIGURES THE USER WOULD ENTER
+                      36                                                                                                                                             ; ie FOR XXXX & XX, XX OPERAND TYPE
+0041 201107           37                                                             JB                      11H, ___8051_N1                         ; FOR INSTRUCTION WITH OPERANDS OF THE FORM: XX, XX or XX, A or XX, #XX
+0044 20128A           38                                                             JB                      12H, ___8051_N2                         ; FOR INSTRUCTION WITH OPERAND OF THE FORM: XXXX (16BIT)
+*** ______________________________________________________________________________________________________________^
+*** ERROR #A51 IN 38 (8051NUMBERS_LATCHED_IN.a, LINE 38): TARGET OUT OF RANGE
+                      39     
+0047 D214             40                                                             SETB            14H                                                     ; USED AS DATA FLAG ONLY
+0049 80A1             41                                                             SJMP            ___8051NUMBERS_EXIT_            ; JUMP TO INSTRUTION THAT LATCH-IN THE USER'S DATA INPUT
+*** _________________________________________________________________________________________________^
+*** ERROR #A51 IN 41 (8051NUMBERS_LATCHED_IN.a, LINE 41): TARGET OUT OF RANGE
+                      42     
+                      43     
+                      44     
+                      45     ; FOR OPCODE XX, #XX OR OPCODE XX, @XX  ETC
+                      46     
+004B 742C             47     ___8051_N1:                                     MOV                     A, #','                                         
+004D                  48                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 48 (8051NUMBERS_LATCHED_IN.a, LINE 48): UNDEFINED SYMBOL (PASS-2)
+0050 7420             49                                                             MOV                     A, #' '
+0052                  50                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 50 (8051NUMBERS_LATCHED_IN.a, LINE 50): UNDEFINED SYMBOL (PASS-2)
+                      51                                                                                                     
+0055                  52     ___8051_N1_1:                           CALL            KEYPAD_ID 
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 52 (8051NUMBERS_LATCHED_IN.a, LINE 52): UNDEFINED SYMBOL (PASS-2)
+0058 3001FA           53                                                             JNB                     01H, ___8051_N1_1
+005B C201             54                                                             CLR                     01H
+                      55                                                                                                                                              
+005D B4402A           56                                                             CJNE            A, #'@', ___8051_N1_2                   ; REMEMBER THAT THIS GUY '@' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE          
+0060 7440             57     ___8051_N1_1_:                          MOV                     A, #'@'
+0062                  58                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 58 (8051NUMBERS_LATCHED_IN.a, LINE 58): UNDEFINED SYMBOL (PASS-2)
+0065 7452             59                                                             MOV                     A, #'R'
+0067                  60                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 60 (8051NUMBERS_LATCHED_IN.a, LINE 60): UNDEFINED SYMBOL (PASS-2)
+                      61     
+006A                  62     ___8051_N1_1_1:                         CALL            KEYPAD_ID 
+*** _________________________________________________________________________________^
+*** ERROR #A45 IN 62 (8051NUMBERS_LATCHED_IN.a, LINE 62): UNDEFINED SYMBOL (PASS-2)
+006D 3001FA           63                                                             JNB                     01H, ___8051_N1_1_1
+0070 C201             64                                                             CLR                     01H
+                      65                                                             
+0072 B43008           66                                                             CJNE            A, #'0', ___8051_N1_1_2
+0075                  67                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 67 (8051NUMBERS_LATCHED_IN.a, LINE 67): UNDEFINED SYMBOL (PASS-2)
+0078 5333FE           68                                                             ANL                     33H, #0FEH                                              ; AN EXCEPT TO THIS IS 'MOV  XX, @R0' SO TAKE NOTE
+007B 8009             69                                                             SJMP            ___8051_N1_1_F
+007D B431EA           70     ___8051_N1_1_2:                         CJNE            A, #'1', ___8051_N1_1_1
+0080                  71                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 71 (8051NUMBERS_LATCHED_IN.a, LINE 71): UNDEFINED SYMBOL (PASS-2)
+0083 433301           72                                                             ORL                     33H, #01H                                               ; AN EXCEPT TO THIS IS 'MOV  XX, @R1' SO TAKE NOTE      
+0086 D213             73     ___8051_N1_1_F:                         SETB            13H                                                             ; INDICATES A 1-BYTE INSTR. ie IT USES 33H FOR LATCHING TO EXTERNAL MEM
+0088 8062             74                                                             SJMP            ___8051NUMBERS_EXIT_
+                      75     
+                      76     
+008A B4410A           77     ___8051_N1_2:                           CJNE            A, #'A', ___8051_N1_3
+008D                  78                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 78 (8051NUMBERS_LATCHED_IN.a, LINE 78): UNDEFINED SYMBOL (PASS-2)
+A51 MACRO ASSEMBLER  8051NUMBERS_LATCHED_IN                                               01/17/2015 22:14:17 PAGE     3
+
+0090 D214             79                                                             SETB            14H                                                             ; FLAG INDICATES DATA OR 2-BYTE INSTR. (IT HELPS IN DATA LATCH_IN)
+0092 855333           80                                                             MOV                     33H, 53H                                                ; LOAD THE OPCODE THAT WAS TEMPORARILY STORED
+0095 8055             81                                                             SJMP            ___8051NUMBERS_EXIT_
+                      82     
+0097 B44303           83     ___8051_N1_3:                           CJNE            A, #'C', ___8051_N1_4
+009A                  84                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 84 (8051NUMBERS_LATCHED_IN.a, LINE 84): UNDEFINED SYMBOL (PASS-2)
+                      85     
+009D B45203           86     ___8051_N1_4:                           CJNE            A, #'R', ___8051_N1_5
+00A0                  87                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 87 (8051NUMBERS_LATCHED_IN.a, LINE 87): UNDEFINED SYMBOL (PASS-2)
+                      88     
+00A3 B42F05           89     ___8051_N1_5:                           CJNE            A, #'/', ___8051_N1_6                    ; REMEMBER THAT THIS GUY '/' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE         
+00A6 742F             90                                                             MOV                     A, #'/'
+00A8                  91                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 91 (8051NUMBERS_LATCHED_IN.a, LINE 91): UNDEFINED SYMBOL (PASS-2)
+                      92     
+00AB B4230A           93     ___8051_N1_6:                           CJNE            A, #'#', ___8051_N1_7                   ; REMEMBER THAT THIS GUY '#' IS TO BE REPLACES WITH AN APT SYMBOL ON THIS LINE          
+00AE 7423             94                                                             MOV                     A, #'#'
+00B0                  95                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 95 (8051NUMBERS_LATCHED_IN.a, LINE 95): UNDEFINED SYMBOL (PASS-2)
+00B3 D217             96                                                             SETB            17H                                                             ; (FLAG USED FOR INDICATING & CAUSING SKIP FOR INSTR. OF THE TYPE XX, #XX IN THE CODE SEGMENT FOLLOWING)
+00B5 855433           97                                                             MOV                     33H, 54H                                                ; LOAD THE OPCODE THAT WAS TEMPORARILY STORED
+                      98                                                                                                                                                     ; CONTINUE TO NEXT CODE TO GET THE REMAINING IMMEDIATE DATA ie #XX
+00B8 C20F             99     ___8051_N1_7:                           CLR                     0FH                                                             ; PREPARE THE TEST FLAG FOR A TEST
+00BA                 100                                                             CALL            ___8051NUMBERS_EX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 100 (8051NUMBERS_LATCHED_IN.a, LINE 100): UNDEFINED SYMBOL (PASS-2)
+00BD 300F95          101                                                             JNB                     0FH, ___8051_N1_1
+00C0                 102                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 102 (8051NUMBERS_LATCHED_IN.a, LINE 102): UNDEFINED SYMBOL (PASS-2)
+                     103     
+00C3                 104                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 104 (8051NUMBERS_LATCHED_IN.a, LINE 104): UNDEFINED SYMBOL (PASS-2)
+00C6 D5518C          105                                                             DJNZ            51H, ___8051_N1_1
+00C9 201720          106                                                             JB                      17H, ___8051NUMBERS_EXIT_               ; JUMP IF THE PORGRAM SEQUENCE ORIGINATED FROM '#' ABOVE
+00CC 855533          107                                                             MOV                     33H, 55H                                                ; LOAD THE OPCODE THAT WAS TEMPORARILY STORED FOR THIS TYPE OF INSTR. 'XX, XX' ONLY
+00CF 801B            108                                                             SJMP            ___8051NUMBERS_EXIT_                    ; JUMP FOR THAT SEGMENT OF THIS SR TO ENSURE THAT THE 'NEXT KEY' ie '*' 
+                     109                                                                                                                                                     ; IS PRESSED BY THE USER
+                     110     
+                     111     
+                     112                                                             
+00D1                 113     ___8051_N2:                                     CALL            KEYPAD_ID 
+*** _________________________________________________________________________________________^
+*** ERROR #A45 IN 113 (8051NUMBERS_LATCHED_IN.a, LINE 113): UNDEFINED SYMBOL (PASS-2)
+00D4 3001FA          114                                                             JNB                     01H, ___8051_N2
+00D7 C201            115                                                             CLR                     01H
+                     116     
+00D9 C20F            117                                                             CLR                     0FH
+00DB                 118                                                             CALL            ___8051NUMBERS_EX
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 118 (8051NUMBERS_LATCHED_IN.a, LINE 118): UNDEFINED SYMBOL (PASS-2)
+00DE 300FF0          119                                                             JNB                     0FH, ___8051_N2
+                     120     
+00E1                 121                                                             CALL            LCD_SHO
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 121 (8051NUMBERS_LATCHED_IN.a, LINE 121): UNDEFINED SYMBOL (PASS-2)
+                     122     
+00E4                 123                                                             CALL            ASCII_2_HEX
+*** _________________________________________________________________________________________________^
+A51 MACRO ASSEMBLER  8051NUMBERS_LATCHED_IN                                               01/17/2015 22:14:17 PAGE     4
+
+*** ERROR #A45 IN 123 (8051NUMBERS_LATCHED_IN.a, LINE 123): UNDEFINED SYMBOL (PASS-2)
+00E7 D551E7          124                                                             DJNZ            51H, ___8051_N2
+                     125     
+00EA 8000            126                                                             SJMP            ___8051NUMBERS_EXIT_                    ; JUMP FOR THAT SEGMENT OF THIS SR TO ENSURE THAT THE 'NEXT KEY' ie '*' 
+                     127                                                                                                                                                     ; IS PRESSED BY THE USER
+                     128     
+                     129     ;                                                       JB                      25H,
+                     130     
+                     131     ;                                                       JB                      26H,
+                     132     
+                     133     ;                                                       JB                      27H,
+                     134     
+                     135                                                             ; THIS SEGMENT OF THE PROGRAM IS MAJORLY FOR CALLING THE NEXT SR TO LACHT-IN THE DATA INPUT BY THE USER
+00EC                 136     ___8051NUMBERS_EXIT_:           CALL            KEYPAD_ID                                       
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 136 (8051NUMBERS_LATCHED_IN.a, LINE 136): UNDEFINED SYMBOL (PASS-2)
+00EF 3001FA          137                                                             JNB                     01H, ___8051NUMBERS_EXIT_
+00F2 C201            138                                                             CLR                     01H                                                     ; GET RESDY FOR ANOTHER KEY
+                     139                                                             
+00F4 B42AF5          140                                                             CJNE            A, #'*', ___8051NUMBERS_EXIT_
+                     141                                                             ; --- OPCODES
+00F7 C203            142                                                             CLR                     03H                                                     ; SELECT OPCODE TYPE IN THE 'NEXT SR' (NOT OPERAND TYPE)
+00F9                 143                                                             CALL            NEXT                                            ; OPCODE LATCH-IN
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 143 (8051NUMBERS_LATCHED_IN.a, LINE 143): UNDEFINED SYMBOL (PASS-2)
+00FC 20130E          144                                                             JB                      13H, ___8051NUMBERS_EXIT_3      ; END FOR INSTRUCTION THAT ARE 1-BYTE (OPCODE TYPE INSTR.) 
+                     145     
+00FF D203            146                                                             SETB            03H                                                     ; SELECT OPERAND TYPE IN THE 'NEXT SR' (NOT OPCODE TYPE)
+                     147                                                             ; --- DATA TYPE OPERAND
+0101 201404          148                                                             JB                      14H, ___8051NUMBERS_EXIT_1      ; JUMP TO DATA TYPE OPERAND LATCH-IN
+                     149     
+                     150                                                             ; --- ADDRESS TYPE OPERAND
+0104 D20E            151                                                             SETB            0EH                                                     ; SELECT ADDRESS TYPE OPERAND IN THE 'NEXT SR' FOR 8051 ONLY
+0106 8002            152                                                             SJMP            ___8051NUMBERS_EXIT_2           ; JUMP TO ADDRESS TYPE OPERAND LATCH-IN
+                     153     
+0108 C20E            154     ___8051NUMBERS_EXIT_1:          CLR                     0EH                                                     ; SELECT DATA TYPE OPERAND IN THE 'NEXT SR' FOR 8051 ONLY
+                     155     
+010A                 156     ___8051NUMBERS_EXIT_2:          CALL            NEXT                                            ; CALL NEXT OSR TO PERMANENTLY SAVE THE OPERAND CODES
+*** _________________________________________________________________________^
+*** ERROR #A45 IN 156 (8051NUMBERS_LATCHED_IN.a, LINE 156): UNDEFINED SYMBOL (PASS-2)
+                     157     
+010D 853A43          158     ___8051NUMBERS_EXIT_3:          MOV                     43H, 3AH                                        ; SAVE THE CURRENT ADDRESS IN THE PAGE MEMORY (HOB)
+0110 853942          159                                                             MOV                     42H, 39H                                        ;                                                                                         (LOB)
+                     160     
+0113                 161                                                             CALL            ADDRESS_DISPLAY_CONTROL         ; CALL THIS OSR TO CLEAR THE LCD SCREEN AND WRITE THE NEW ADDRESS IN LINE 1
+*** _________________________________________________________________________________________________^
+*** ERROR #A45 IN 161 (8051NUMBERS_LATCHED_IN.a, LINE 161): UNDEFINED SYMBOL (PASS-2)
+                     162     
+0116 C211            163                                                             CLR                     11H                                                     ; (USED FOR 3-BYTE INSTR.) PREPARE THE OPERAND TYPE FLAGS FOR NEXT INSTRUCTION/ NEXT TIME OF USAGE
+0118 C212            164                                                             CLR                     12H                                                     ; (USED FOR 3-BYTE INSTR.)
+011A C213            165                                                             CLR                     13H                                                     ; (USED FOR 1-BYTE INSTR.)
+011C C214            166                                                             CLR                     14H                                                     ; (USED FOR 2-BYTE INSTR.)
+011E C217            167                                                             CLR                     17H                                                     ; (FLAG USED FOR INDICATING & CAUSING SKIP FOR INSTR. OF THE TYPE XX, #XX)
+                     168                                                             ; NOTICE THAT AT THE END OF ENTERING ANY OPERAND TYPE THE TEST FLAG, 0FH ALWAYS REMAINS SET BEFORE LEAVING THE SR
+0120 C220            169                                                             CLR                     20H                                                     ; '___8051OPERAND_d_R_A' SR ID FLAG READY FOR THE NEXT USAGE
+0122                 170     ___8051NUMBERS_EXIT:            
+0122 22              171                                                             RET
+*** WARNING #A41 IN 171 (8051NUMBERS_LATCHED_IN.a, LINE 171): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  8051NUMBERS_LATCHED_IN                                               01/17/2015 22:14:17 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                    T Y P E  V A L U E   ATTRIBUTES
+
+ADDRESS_DISPLAY_CONTROL .    ----   -----       
+ASCII_2_HEX . . . . . . .    ----   -----       
+KEYPAD_ID . . . . . . . .    ----   -----       
+LCD_SHO . . . . . . . . .    ----   -----       
+NEXT. . . . . . . . . . .    ----   -----       
+___8051NUMBERS_EX . . . .    ----   -----       
+___8051NUMBERS_EXIT . . .  C ADDR   0122H   A   
+___8051NUMBERS_EXIT_. . .  C ADDR   00ECH   A   
+___8051NUMBERS_EXIT_1 . .  C ADDR   0108H   A   
+___8051NUMBERS_EXIT_2 . .  C ADDR   010AH   A   
+___8051NUMBERS_EXIT_3 . .  C ADDR   010DH   A   
+___8051NUMBERS_LATCHED_IN  C ADDR   0000H   A   
+___8051_N1. . . . . . . .  C ADDR   004BH   A   
+___8051_N1_1. . . . . . .  C ADDR   0055H   A   
+___8051_N1_1_ . . . . . .  C ADDR   0060H   A   
+___8051_N1_1_1. . . . . .  C ADDR   006AH   A   
+___8051_N1_1_2. . . . . .  C ADDR   007DH   A   
+___8051_N1_1_F. . . . . .  C ADDR   0086H   A   
+___8051_N1_2. . . . . . .  C ADDR   008AH   A   
+___8051_N1_3. . . . . . .  C ADDR   0097H   A   
+___8051_N1_4. . . . . . .  C ADDR   009DH   A   
+___8051_N1_5. . . . . . .  C ADDR   00A3H   A   
+___8051_N1_6. . . . . . .  C ADDR   00ABH   A   
+___8051_N1_7. . . . . . .  C ADDR   00B8H   A   
+___8051_N2. . . . . . . .  C ADDR   00D1H   A   
+___SKIP_END . . . . . . .  C ADDR   002AH   A   
+___START_SKIP . . . . . .  C ADDR   000CH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 37 ERROR(S)

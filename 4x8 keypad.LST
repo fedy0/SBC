@@ -1,0 +1,166 @@
+A51 MACRO ASSEMBLER  4X8_KEYPAD                                                           02/11/2015 00:39:52 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.00
+OBJECT MODULE PLACED IN C:\sbcHex\4x8 keypad.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE 4x8 keypad.asm SET(SMALL) DEBUG OBJECT(C:\sbcHex\4x8 keypad.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  00B3                 1                     EN                      BIT P3.3 
+  00A5                 2                     RS                      BIT P2.5
+                       3                             
+0000                   4                             ORG                     00H
+                       5     
+0000 7590FF            6                             MOV             P1,#0FFH                                           
+                                          ;MAKE PORT1 AN INPUT PORT
+0003 75B008            7                             MOV             P3, #00001000B
+0006 1182              8                     ACALL           INIT_LCD
+                       9            
+0008 1163             10     K2:             ACALL           DELAY
+000A E590             11                     MOV             A,P1
+000C B4FF05           12                     CJNE            A, #11111111B, OVER
+000F 75B008           13                     MOV             P3, #00001000B
+0012 80F4             14                     SJMP            K2
+                      15            
+0014 1163             16     OVER:           ACALL           DELAY
+0016 E590             17                     MOV             A, P1
+0018 B4FF02           18                     CJNE            A, #11111111B, OVER1
+001B 80EB             19                     SJMP            K2
+                      20            
+001D 75B0FE           21     OVER1:          MOV             P3, #11111110B
+0020 E590             22                     MOV             A, P1
+0022 B4FF1B           23                     CJNE            A, #11111111B, ROW_0
+                      24            
+0025 75B0FD           25                     MOV             P3, #11111101B
+0028 E590             26                     MOV             A, P1
+002A B4FF18           27                     CJNE            A, #11111111B, ROW_1
+                      28            
+002D 75B0EF           29                     MOV             P3, #11101111B
+0030 E590             30                     MOV             A, P1
+0032 B4FF15           31                     CJNE            A, #11111111B, ROW_2
+                      32            
+0035 75B0DF           33                     MOV             P3, #11011111B
+0038 E590             34                             MOV             A, P1
+003A B4FF12           35                             CJNE            A, #11111111B, ROW_3
+                      36           
+003D 020008           37                     LJMP            K2
+                      38            
+0040 900100           39     ROW_0:          MOV             DPTR, #LT_ROW_1
+0043 800D             40                     SJMP            FIND
+                      41     
+0045 900108           42     ROW_1:          MOV             DPTR, #LT_ROW_2
+0048 8008             43                     SJMP            FIND
+                      44     
+004A 900110           45     ROW_2:          MOV             DPTR, #LT_ROW_3
+004D 8003             46                     SJMP            FIND
+                      47     
+004F 900118           48     ROW_3:          MOV             DPTR, #LT_ROW_4
+                      49     
+0052 13               50     FIND:           RRC             A
+0053 5003             51                     JNC             MATCH
+0055 A3               52                     INC             DPTR
+0056 80FA             53                     SJMP            FIND
+                      54           
+0058 E4               55     MATCH:          CLR             A
+0059 93               56                     MOVC            A, @A+DPTR
+005A 116C             57                     ACALL           DATA_WRT
+A51 MACRO ASSEMBLER  4X8_KEYPAD                                                           02/11/2015 00:39:52 PAGE     2
+
+005C 1163             58                     ACALL           DELAY
+005E 1163             59                     ACALL           DELAY
+0060 020008           60                     LJMP            K2
+                      61            
+0063 7A32             62     DELAY:          MOV             R2,#50
+0065 79FF             63                             MOV             R1,#255
+                      64     
+0067 D9FE             65     DELAYA:         DJNZ            R1, DELAYA
+0069 DAFC             66                     DJNZ            R2, DELAYA
+006B 22               67                     RET
+                      68            
+006C F580             69     DATA_WRT:       MOV             P0, A
+006E D2A5             70                     SETB            RS
+                      71                     ;CLR RW
+0070 D2B3             72                     SETB            EN
+0072 1163             73                     ACALL           DELAY
+0074 C2B3             74                     CLR             EN
+0076 22               75                     RET
+                      76     
+0077 F580             77     COM_WRT:        MOV             P0, A
+0079 C2A5             78                     CLR             RS
+                      79                     ;CLR RW         
+007B D2B3             80                     SETB            EN
+007D 1163             81                     ACALL           DELAY
+007F C2B3             82                     CLR             EN
+0081 22               83                     RET
+                      84     
+0082 7438             85     INIT_LCD:       MOV             A, #38H                                         ;2 LINES 5X
+                             7 MATRIX
+0084 1177             86                     ACALL           COM_WRT
+0086 1163             87                     ACALL           DELAY
+0088 740E             88                     MOV             A, #0EH                                         ;DISPLAY ON
+                             , CURSOR BLINKING
+008A 1177             89                     ACALL           COM_WRT
+008C 1163             90                     ACALL           DELAY
+008E 7401             91                     MOV             A, #01H                                         ;CLEAR AND 
+                             RETURN TO HOME
+0090 1177             92                     ACALL           COM_WRT
+0092 1163             93                     ACALL           DELAY
+0094 740C             94                     MOV             A, #0CH                                         ;POSITION
+0096 1177             95                     ACALL           COM_WRT
+0098 1163             96                     ACALL           DELAY
+009A 22               97                     RET
+                      98       
+0100                  99                     ORG             100H
+0100 30313233        100     LT_ROW_1:                               DB                      '0','1','2','3','4','5','6'
+                             ,'7'         ; DATA STORED IN ASCII CODE
+0104 34353637                
+0108 45525455        101     LT_ROW_2:                               DB                      'E','R','T','U','I','O','P'
+                             ,'8'
+010C 494F5038                
+0110 41534446        102     LT_ROW_3:                               DB                      'A','S','D','F','H','J','L'
+                             ,'9'
+0114 484A4C39                
+0118 5A584356        103     LT_ROW_4:                               DB                      'Z','X','C','V','B','N','M'
+                             ,'*'         ; '*' IS RESERVED FOR THE FUNCTION 'NEXT'
+011C 424E4D2A                
+                     104     
+                     105                             END
+A51 MACRO ASSEMBLER  4X8_KEYPAD                                                           02/11/2015 00:39:52 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+COM_WRT. . . . . .  C ADDR   0077H   A   
+DATA_WRT . . . . .  C ADDR   006CH   A   
+DELAY. . . . . . .  C ADDR   0063H   A   
+DELAYA . . . . . .  C ADDR   0067H   A   
+EN . . . . . . . .  B ADDR   00B0H.3 A   
+FIND . . . . . . .  C ADDR   0052H   A   
+INIT_LCD . . . . .  C ADDR   0082H   A   
+K2 . . . . . . . .  C ADDR   0008H   A   
+LT_ROW_1 . . . . .  C ADDR   0100H   A   
+LT_ROW_2 . . . . .  C ADDR   0108H   A   
+LT_ROW_3 . . . . .  C ADDR   0110H   A   
+LT_ROW_4 . . . . .  C ADDR   0118H   A   
+MATCH. . . . . . .  C ADDR   0058H   A   
+OVER . . . . . . .  C ADDR   0014H   A   
+OVER1. . . . . . .  C ADDR   001DH   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+ROW_0. . . . . . .  C ADDR   0040H   A   
+ROW_1. . . . . . .  C ADDR   0045H   A   
+ROW_2. . . . . . .  C ADDR   004AH   A   
+ROW_3. . . . . . .  C ADDR   004FH   A   
+RS . . . . . . . .  B ADDR   00A0H.5 A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,1 @@
+"..\SBC-85uP\E_N_Dsbc.a" SET (SMALL) DEBUG PRINT(.\E_N_Dsbc.lst) OBJECT(..\SBC-85uP\SBCHex\E_N_Dsbc.obj) EP
